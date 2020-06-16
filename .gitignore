@@ -103,3 +103,4 @@ Temporary Items
 /venv/
 /node_modules/
 /.idea/
+/static/
