@@ -1,5 +1,5 @@
 /*
- * \file index.tsx
+ * \file App.css
  * \date 2020 - 6 - 16
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
@@ -21,22 +21,29 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+@import '~antd/dist/antd.css';
 
-import App from './components/App'
+.site-page-header {
+    color: white;
+    width: 200px;
+    height: 64px;
+    margin: 0 0 0 0;
+    float: left;
+    font-size: x-large;
+    font-weight: bold;
+}
 
-(async () => {
-  const render = () => {
-    ReactDOM.render(
-      <App />,
-      document.getElementById('root')
-    )
-  }
-  render()
-})().catch(e => {
-  const h = document.createElement('H1')
-  h.innerText = '500 Server Error'
-  document.body.appendChild(h)
-  console.error(e)
-})
+.site-layout-content {
+    padding: 10px 50px 10px 50px;
+}
+
+.site-layout-footer{
+    text-align: center;
+}
+
+[data-theme="dark"] .site-layout-content {
+    background: #141414;
+}
+[data-theme="dark"] .logo {
+    background: rgba(255,255,255,0.3);
+}
