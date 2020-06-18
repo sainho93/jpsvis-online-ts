@@ -1,5 +1,5 @@
 const path = require('path')
-
+const tsImportPluginFactory = require('ts-import-plugin')
 
 module.exports = {
   mode: 'development',
@@ -37,23 +37,6 @@ module.exports = {
         loader: 'source-map-loader'
       },
       {
-        test: /\.ts(x?)$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'ts-loader'
-          }
-        ]
-      },
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: 'babel',
-        options: {
-          presets: ['react', 'es2015']
-        }
-      },
-      {
         test: /\.css$/,
         use: [
           // style-loader
@@ -64,10 +47,29 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              modules: true
+              modules: false // Close CSS modules in css-loader
             }
           }
         ]
+      },
+      {
+        test: /\.(jsx|tsx|js|ts)$/,
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: true,
+          // Using ts-import-plugin to load ant design components in Typescript
+          getCustomTransformers: () => ({
+            before: [tsImportPluginFactory({
+              libraryName: 'antd',
+              libraryDirectory: 'lib',
+              style: 'css'
+            })]
+          }),
+          compilerOptions: {
+            module: 'es2015'
+          }
+        },
+        exclude: /node_modules/
       }
     ]
   },
