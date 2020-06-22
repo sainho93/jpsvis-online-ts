@@ -5,6 +5,10 @@
     "noImplicitAny": true,
     "module": "commonjs",
     "target": "es6",
-    "jsx": "react"
-  }
+    "jsx": "react",
+    "allowJs": true // Allow js files in the Typescript project
+  },
+  "include": [
+    "./src/components" // Incluede js files into compilation
+  ]
 }
