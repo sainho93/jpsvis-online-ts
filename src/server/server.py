@@ -6,6 +6,7 @@ import asyncio
 import logging
 import pathlib
 import aiohttp_debugtoolbar
+from xml.etree import ElementTree as ET
 from aiohttp_debugtoolbar import toolbar_middleware_factory
 
 # Base directory
@@ -36,9 +37,24 @@ async def post_file(request):
                     break
                 size += len(chunk)
                 f.write(chunk)
+                f.close()
 
-        text = {'res': '200'}
-        return web.Response(text=json.dumps(text, ensure_ascii=False)) # Response to Dragger component
+                # identify the file format
+                tree = ET.parse(filename)
+                root = tree.getroot()
+                if root.tag == 'geometry':
+                    os.rename(filename, 'geometry.xml')
+                    text = {'res': '200'}
+
+                elif root.tag == 'JuPedSim':
+                    os.rename(filename, 'trajectory.xml')
+                    text = {'res': '200'}
+
+                else:
+                    os.remove(filename)
+                    text = {'res': '500'}
+                return web.Response(text=json.dumps(text, ensure_ascii=False)) # Response to Dragger component
+
     except Exception as e:
         print(e)
         return web.Response(text="500") # Response to Dragger component
@@ -69,6 +85,7 @@ async def init():
     app.router.add_get("/", index)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
 
+
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, '0.0.0.0', 8080)
@@ -90,3 +107,4 @@ if __name__ == '__main__':
         loop.run_forever()
     except KeyboardInterrupt:
         pass
+
