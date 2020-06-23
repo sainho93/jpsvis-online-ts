@@ -68,7 +68,6 @@ async def init():
     # Routers
     app.router.add_get("/", index)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
-    #TODO: Fix CSS file error
 
     runner = web.AppRunner(app)
     await runner.setup()
@@ -86,5 +85,8 @@ if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(init())
-    loop.run_forever()
-    #TODO: Fix run_forever error
+
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
