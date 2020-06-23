@@ -7,11 +7,32 @@ import logging
 import pathlib
 import aiohttp_debugtoolbar
 from xml.etree import ElementTree as ET
+import functools
+import xmltodict
 from aiohttp_debugtoolbar import toolbar_middleware_factory
+
 
 # Base directory
 PROJ_ROOT = pathlib.Path(__file__).parent.parent.parent
 NO_CACHE_HEADER = {'cache-control': 'no-cache'}
+
+
+def parse_xml_file(filepath):
+    if filepath:
+        with open(filepath, encoding='utf-8') as f:
+            return xmltodict.parse(f.read(), attr_prefix='')
+    else:
+        return None
+
+
+async def get_geometry(request):
+    geo_file = 'geometry.xml'
+    return web.Response(text=json.dumps(parse_xml_file(geo_file), ensure_ascii=False))
+
+
+async def get_trajectory(request):
+    tra_file = 'trajectory.xml'
+    return web.Response(text=json.dumps(parse_xml_file(tra_file), ensure_ascii=False))
 
 
 async def index(request):
@@ -39,7 +60,8 @@ async def post_file(request):
                 f.write(chunk)
                 f.close()
 
-                # identify the file format
+                # Identify the file format
+                # Rename according to the file format
                 tree = ET.parse(filename)
                 root = tree.getroot()
                 if root.tag == 'geometry':
@@ -53,6 +75,7 @@ async def post_file(request):
                 else:
                     os.remove(filename)
                     text = {'res': '500'}
+
                 return web.Response(text=json.dumps(text, ensure_ascii=False)) # Response to Dragger component
 
     except Exception as e:
@@ -60,11 +83,8 @@ async def post_file(request):
         return web.Response(text="500") # Response to Dragger component
 
 
-
-# Set-up web app
-async def init():
+def setup_server():
     app = web.Application()
-
     aiohttp_debugtoolbar.setup(app)
 
     # CORS Implementation
@@ -81,11 +101,20 @@ async def init():
     resource = cors.add(app.router.add_resource("/upload/"))
     cors.add(resource.add_route("POST", post_file)) # Add handler for POST request on ./upload
 
+
+
     # Routers
     app.router.add_get("/", index)
+    app.router.add_get("/geometry", get_geometry)
+    app.router.add_get("/trajectory", get_trajectory)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
 
+    return app
 
+
+# Set-up web app
+async def init():
+    app = setup_server()
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, '0.0.0.0', 8080)
@@ -99,7 +128,6 @@ async def init():
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-
     loop = asyncio.get_event_loop()
     loop.run_until_complete(init())
 
