@@ -1,6 +1,6 @@
 /*
- * \file index.tsx
- * \date 2020 - 6 - 16
+ * \file three-mtl-loader.d.ts
+ * \date 2020 - 6 - 24
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
@@ -21,26 +21,4 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
-
-import App from './components/App'
-import init from './geometry/initialization';
-
-(async () => {
-  // render ant design components
-  const render = () => {
-    ReactDOM.render(
-      <App />,
-      document.getElementById('root')
-    )
-  }
-  render()
-
-  const initResources = await init();
-})().catch(e => {
-  const h = document.createElement('H1')
-  h.innerText = '500 Server Error'
-  document.body.appendChild(h)
-  console.error(e)
-})
+declare module 'three-mtl-loader';

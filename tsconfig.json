@@ -6,7 +6,8 @@
     "module": "commonjs",
     "target": "es6",
     "jsx": "react",
-    "allowJs": true // Allow js files in the Typescript project
+    "allowJs": true, // Allow js files in the Typescript project
+    "moduleResolution": "node" // Allow Three.js uses Trypescript
   },
   "include": [
     "./src/components" // Incluede js files into compilation
