@@ -23,11 +23,8 @@
 
 @import '~antd/dist/antd.css';
 
+.pages-container{
+    height: 100%;
+}
 
 
-[data-theme="dark"] .site-layout-content {
-    background: #141414;
-}
-[data-theme="dark"] .logo {
-    background: rgba(255,255,255,0.3);
-}

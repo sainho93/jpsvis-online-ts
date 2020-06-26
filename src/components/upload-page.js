@@ -117,9 +117,9 @@ class UploadPage extends React.Component {
   render () {
     const { current } = this.state
     return (
-      <Layout>
+      <Layout className='upload-page-layout'>
         <Header>
-          <span className='site-page-header'>JPSvis Online</span>
+          <span className='upload-page-header'>JPSvis Online</span>
           <Menu theme="dark" mode="horizontal">
             <Menu.Item key="1" icon={<ReloadOutlined/>} >
               Start Over
@@ -127,7 +127,7 @@ class UploadPage extends React.Component {
             <Menu.Item key="2" icon={<LinkOutlined/>}> About JPSvis</Menu.Item>
           </Menu>
         </Header>
-        <Content className='site-layout-content'>
+        <Content className='upload-layout-content'>
           <div>
             <Steps current={current}>
               {steps.map(item => (
@@ -166,7 +166,7 @@ class UploadPage extends React.Component {
             </div>
           </div>
         </Content>
-        <Footer className='site-layout-footer'>
+        <Footer className='upload-layout-footer'>
           <div >
             ©2020 JuPedSim. All rights reserved.
           </div>

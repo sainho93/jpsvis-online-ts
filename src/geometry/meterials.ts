@@ -1,6 +1,6 @@
 /*
- * \file upload-page.css
- * \date 2020 - 6 - 18
+ * \file meterials.ts
+ * \date 2020 - 6 - 26
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
@@ -21,39 +21,28 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  */
 
-.steps-content {
-    margin-top: 16px;
-    border: 1px dashed #e9e9e9;
-    border-radius: 2px;
-    background-color: #fafafa;
-    min-height: 200px;
-    padding-top: 80px;
-}
+/**
+ * Materials used in three.js scenes.
+ */
 
-.steps-action {
-    margin-top: 24px;
-    text-align: center;
-}
+import * as three from 'three';
 
-.upload-page-layout{
-    height: 100%;
-}
+const textureLoader = new three.TextureLoader();
 
-.upload-page-header {
-    color: white;
-    width: 200px;
-    height: 64px;
-    margin: 0 0 0 0;
-    float: left;
-    font-size: x-large;
-    font-weight: bold;
-}
+const loadRepeatedTexture = (url: string) =>
+	textureLoader.load(url, texture => {
+		texture.wrapS = texture.wrapT = three.RepeatWrapping;
+	});
 
-.upload-layout-content {
-    padding: 10px 50px 10px 50px;
-    height: 100%;
-}
-
-.upload-layout-footer{
-    text-align: center;
-}
+export const LAND = new three.MeshPhysicalMaterial({
+	color: 0x888888,
+	metalness: 0.1,
+	roughness: 1.0,
+	clearcoat: 0.1,
+	clearcoatRoughness: 1.0,
+	reflectivity: 0.05,
+	// We use polygonOffset to counter z-fighting with roadways.
+	polygonOffset: true,
+	polygonOffsetFactor: +2,
+	polygonOffsetUnits: 1,
+});

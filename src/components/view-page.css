@@ -1,1 +1,10 @@
 @import 'App.css';
+
+.view-page-layout{
+    height: 100%;
+}
+
+.view-page-layout-content {
+    min-height: 360px;
+}
+

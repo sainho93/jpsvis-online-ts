@@ -24,9 +24,12 @@
 import * as _ from 'lodash';
 import * as three from 'three';
 import addSky from './effects/sky';
-import * as dat from 'dat.gui/build/dat.gui.js';
 import * as Stats  from 'stats.js'
 import {InitResources} from './initialization';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as dat from 'dat.gui/build/dat.gui.js';
 
 
 export interface Params {
@@ -52,8 +55,10 @@ export default class JPS3D {
 		const startMs = window.performance.now();
 
 		this.parentElement = parentElement;
-		const width = parentElement.clientWidth;
-		const height = parentElement.clientHeight;
+		const width = parentElement.parentElement.clientWidth; // Content component
+		const height = parentElement.parentElement.clientHeight;
+
+		this.animate = this.animate.bind(this);
 
 		// three.js
 		this.renderer = new three.WebGLRenderer();
@@ -67,20 +72,20 @@ export default class JPS3D {
 		parentElement.appendChild(this.renderer.domElement);
 
 		// dat.gui
+		// Add sky
 		this.gui = new dat.gui.GUI();
 		addSky(this.gui, this.scene);
 
-		this.groundPlane = this.scene.getObjectByName('Land');
+		// Add ground
+		// this.groundPlane = this.scene.getObjectByName('Land');
 
-		this.animate = this.animate.bind(this);
-
-		const sceneFolder = this.gui.addFolder('Scene');
-		const sceneOptions = {
-			showGroundPlane: true,
-		};
-		sceneFolder.add(sceneOptions, 'showGroundPlane').onChange((visible: boolean) => {
-			this.groundPlane.visible = visible;
-		});
+		// const sceneFolder = this.gui.addFolder('Scene');
+		// const sceneOptions = {
+		// 	showGroundPlane: true,
+		// };
+		// sceneFolder.add(sceneOptions, 'showGroundPlane').onChange((visible: boolean) => {
+		// 	this.groundPlane.visible = visible;
+		// });
 
 
 		// stats.js
@@ -88,7 +93,9 @@ export default class JPS3D {
 		this.stats.showPanel(0); // 0 = show stats on FPS
 		parentElement.appendChild(this.stats.dom);
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
+
 		this.animate();
+
 
 		const endMs = window.performance.now();
 

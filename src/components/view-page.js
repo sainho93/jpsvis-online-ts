@@ -28,6 +28,9 @@ import { Row, Col } from 'antd'
 import init from '../geometry/initialization';
 import startScene from '../geometry/datamanager';
 
+import { Layout, Menu } from 'antd';
+const { Header, Content, Footer} = Layout;
+
 class ViewPage extends React.Component {
   // Load Three.JS after <canvas/> node is mounted into DOM
   componentDidMount(){
@@ -38,23 +41,15 @@ class ViewPage extends React.Component {
     )();
   }
 
-
-
   render () {
     return (
-      <>
-        <Row>
-          <Col span={24}>
-            <div id="canvas">
-            </div>
-          </Col>
-        </Row>
-        <Row justify={'center'}>
-          <Col span={4}>
-            <SwitchBar />
-          </Col>
-        </Row>
-      </>
+      <Layout className="view-page-layout">
+        <Content className="view-page-layout-content">
+          <div id="canvas" >
+          </div>
+        </Content>
+        <Footer/>
+      </Layout>
     )
   }
 }

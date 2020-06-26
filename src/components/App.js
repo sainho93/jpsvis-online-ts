@@ -35,7 +35,7 @@ import AnalyzePage from '../components/analyze-page'
 
 const App = () => (
   <Router>
-    <div id='page-container'>
+    <div id='page-container' className='pages-container'>
       <Switch>
         <Route exact={true} path='/' component={UploadPage}/>
         <Route path='/ViewPage' component={ViewPage}/>
