@@ -1,6 +1,6 @@
 /*
- * \file index.tsx
- * \date 2020 - 6 - 16
+ * \file datamanager.ts
+ * \date 2020 - 6 - 25
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
@@ -21,23 +21,16 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+import * as _ from 'lodash';
+import JPS3D from "./JPS3D";
 
-import App from './components/App'
+import {InitResources} from './initialization';
 
-(async () => {
-  const render = () => {
-    ReactDOM.render(
-      <App />,
-      document.getElementById('root')
-    )
-  }
-  render()
 
-})().catch(e => {
-  const h = document.createElement('H1')
-  h.innerText = '500 Server Error'
-  document.body.appendChild(h)
-  console.error(e)
-})
+export default function startScene(init: InitResources) {
+
+	const jps3D = new JPS3D(init.geometryRootEl, init)
+
+	return {
+	}
+}

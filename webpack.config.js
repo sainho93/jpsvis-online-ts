@@ -4,7 +4,7 @@ const tsImportPluginFactory = require('ts-import-plugin')
 module.exports = {
   mode: 'development',
   entry: {
-    index: __dirname + '/src/index.tsx'
+    index: __dirname + '/src/index.tsx',
   },
 
   output: {
@@ -74,9 +74,9 @@ module.exports = {
     ]
   },
 
+
+
   // Don't follow/bundle these modules, but request them at runtime from the environment
   externals: {
-    react: 'React',
-    'react-dom': 'ReactDOM'
   }
 }

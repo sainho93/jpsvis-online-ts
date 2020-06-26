@@ -26,9 +26,19 @@ import SwitchBar from './switchbar'
 import './view-page.css'
 import { Row, Col } from 'antd'
 import init from '../geometry/initialization';
-import createStore from '../geometry/datamanager';
+import startScene from '../geometry/datamanager';
 
 class ViewPage extends React.Component {
+  // Load Three.JS after <canvas/> node is mounted into DOM
+  componentDidMount(){
+    (async () => {
+        const initResources = await init();
+        startScene(initResources);
+      }
+    )();
+  }
+
+
 
   render () {
     return (

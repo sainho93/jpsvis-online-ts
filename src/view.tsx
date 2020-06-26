@@ -1,6 +1,6 @@
 /*
- * \file index.tsx
- * \date 2020 - 6 - 16
+ * \file view.ts
+ * \date 2020 - 6 - 25
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
@@ -23,21 +23,28 @@
 
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-
-import App from './components/App'
+import init from './geometry/initialization'
+import startScene from './geometry/datamanager'
+import SideMenu from './components/sidemenu'
 
 (async () => {
-  const render = () => {
-    ReactDOM.render(
-      <App />,
-      document.getElementById('root')
-    )
-  }
-  render()
+
+	// Render three.js
+	const initResources = await init();
+	const store = startScene(initResources);
+
+	// Render ant design components
+	const render = () => {
+		ReactDOM.render(
+			<SideMenu />,
+			document.getElementById('root')
+		)
+	}
+	render()
 
 })().catch(e => {
-  const h = document.createElement('H1')
-  h.innerText = '500 Server Error'
-  document.body.appendChild(h)
-  console.error(e)
-})
+	const h = document.createElement('H1')
+	h.innerText = '500 Server Error'
+	document.body.appendChild(h)
+	console.error(e)
+});

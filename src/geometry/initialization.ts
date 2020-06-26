@@ -40,12 +40,6 @@ export interface Geo {
 
 export interface InitResources {
 	geometry: Geo;
-	arrows: {
-			left: three.Object3D;
-			right: three.Object3D;
-			uturn: three.Object3D;
-			straight: three.Object3D;
-	};
 	geometryRootEl: HTMLElement;
 }
 
@@ -70,46 +64,17 @@ async function fetchJson<T>(url: string): Promise<T> {
 	return val;
 }
 
-async function promiseObject<T>(obj: {[k in keyof T]: Promise<T[k]>}): Promise<T> {
-	const keys = Object.keys(obj);
-	const promises = keys.map(k => (obj as any)[k]);
-	const values = await Promise.all(promises);
-	const out = {} as any;
-	keys.forEach((k, i) => {
-		out[k] = values[i];
-	});
-	return out;
-}
+
 
 export default async function init (): Promise<InitResources> {
 	const loadStartMs = window.performance.now();
 	const geometry = await fetchJson<Geo>('geometry');
 
-	const domPromise = new Promise((resolve, reject) => {
-		window.addEventListener('DOMContentLoaded', resolve);
-	})
+	const loadEndMs = window.performance.now();
+	console.log('Loaded static resources in ', loadEndMs - loadStartMs, ' ms.');
 
-	// eslint-disable-next-line no-useless-catch
-	try {
-		const {dom, ...resources} = await promiseObject({
-			arrows: promiseObject({
-				left: loadOBJFile('/arrows/LeftArrow.obj'),
-				right: loadOBJFile('/arrows/RightArrow.obj'),
-				uturn: loadOBJFile('/arrows/UTurnArrow.obj'),
-				straight: loadOBJFile('/arrows/StraightArrow.obj'),
-			}),
-			dom: domPromise,
-		})
-
-		const loadEndMs = window.performance.now();
-		console.log('Loaded static resources in ', loadEndMs - loadStartMs, ' ms.');
-
-		return{
-			...resources,
-			geometry,
-			geometryRootEl: getOrThrow('canvas')
-		};
-	} catch (e) {
-		throw e;
+	return{
+		geometry,
+		geometryRootEl: getOrThrow('canvas')
 	}
 }
