@@ -34,3 +34,21 @@
     margin-top: 24px;
     text-align: center;
 }
+
+.site-page-header {
+    color: white;
+    width: 200px;
+    height: 64px;
+    margin: 0 0 0 0;
+    float: left;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.site-layout-content {
+    padding: 10px 50px 10px 50px;
+}
+
+.site-layout-footer{
+    text-align: center;
+}

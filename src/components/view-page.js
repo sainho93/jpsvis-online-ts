@@ -25,8 +25,11 @@ import React from 'react'
 import SwitchBar from './switchbar'
 import './view-page.css'
 import { Row, Col } from 'antd'
+import init from '../geometry/initialization';
+import createStore from '../geometry/datamanager';
 
 class ViewPage extends React.Component {
+
   render () {
     return (
       <>

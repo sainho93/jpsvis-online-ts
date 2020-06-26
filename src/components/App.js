@@ -25,43 +25,23 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import { Layout, Menu } from 'antd'
-import { LinkOutlined, ReloadOutlined } from '@ant-design/icons'
+
 
 import './App.css'
 import UploadPage from '../components/upload-page'
 import ViewPage from '../components/view-page'
 import AnalyzePage from '../components/analyze-page'
 
-const { Header, Content, Footer } = Layout
 
 const App = () => (
   <Router>
-    <Layout>
-      {/* TODO: 高度自适应屏幕 */}
-      <Header>
-        <span className='site-page-header'>JPSvis Online</span>
-        <Menu theme="dark" mode="horizontal">
-          <Menu.Item key="1" icon={<ReloadOutlined/>} >
-                        Start Over
-          </Menu.Item>
-          <Menu.Item key="2" icon={<LinkOutlined/>}> About JPSvis</Menu.Item>
-        </Menu>
-      </Header>
-      <Content className='site-layout-content'>
-        <div id='page-container'>
-          <Switch>
-            <Route exact={true} path='/' component={UploadPage}/>
-            <Route path='/ViewPage' component={ViewPage}/>
-            <Route path='/AnalyzePage' component={AnalyzePage}/>
-          </Switch>
-        </div>
-      </Content>
-      <Footer className='site-layout-footer'>
-        <div >
-                    ©2020 JuPedSim. All rights reserved.
-        </div>
-      </Footer>
-    </Layout>
+    <div id='page-container'>
+      <Switch>
+        <Route exact={true} path='/' component={UploadPage}/>
+        <Route path='/ViewPage' component={ViewPage}/>
+        <Route path='/AnalyzePage' component={AnalyzePage}/>
+      </Switch>
+    </div>
   </Router>
 )
 
