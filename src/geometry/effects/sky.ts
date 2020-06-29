@@ -2,7 +2,7 @@
 
 import * as three from 'three';
 
-const AMBIENT_LIGHT_COLOR = 0x444444;
+const AMBIENT_LIGHT_COLOR = 0x404040;
 
 export default function addSky(
   scene: three.Scene,
@@ -23,4 +23,17 @@ export default function addSky(
   // Set ambient light
   const ambient = new three.AmbientLight(AMBIENT_LIGHT_COLOR);
   scene.add(ambient);
+
+  // White directional light at half intensity shining from the top o simulate daylight.
+  // This light can cast shadows
+  const directionalLight = new three.DirectionalLight( 0xffffff, 0.5 );
+  directionalLight.castShadow = true;            // default false
+
+  //Set up shadow properties for the light
+  directionalLight.shadow.mapSize.width = 512;  // default
+  directionalLight.shadow.mapSize.height = 512; // default
+  directionalLight.shadow.camera.near = 0.5;    // default
+  directionalLight.shadow.camera.far = 500;     // default
+
+  scene.add( directionalLight );
 }
