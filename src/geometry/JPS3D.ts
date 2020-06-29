@@ -82,7 +82,12 @@ export default class JPS3D {
 		controls.minDistance = 1000;
 		controls.maxDistance = 5000;
 
+		// Add geometry
+		const staticGroup: three.Group = makeStaticObjects(init.geometry);
+		this.scene.add(staticGroup);
 
+		// Add gound plane
+		this.groundPlane = this.scene.getObjectByName('Land');
 
 		// Add sky
 		this.gui = new dat.gui.GUI();

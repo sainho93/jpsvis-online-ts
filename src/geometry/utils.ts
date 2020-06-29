@@ -24,6 +24,7 @@
 import * as three from 'three';
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader'
 
+
 const OBJ_LOADER = new OBJLoader;
 
 /** Set a material on all meshes in an object. */
@@ -50,4 +51,64 @@ export function loadOBJFile(url: string, material?: three.Material): Promise<thr
 			reject,
 		);
 	});
+}
+
+/** Return a flat mesh from a polygon's vertices. The polygon will have y=0. */
+
+function shapeFromVertices(vertices: number[][]) {
+	const shape = new three.Shape();
+	shape.moveTo(vertices[0][0], vertices[0][1]);
+	for (let i = 1; i < vertices.length; i++) {
+		const [x, y] = vertices[i];
+		shape.lineTo(x, y);
+	}
+	shape.closePath();
+	return shape;
+}
+
+// Add UV mappings to geometries which lack them.
+function addUVMappingToGeometry(geometry: three.Geometry) {
+	// See https://stackoverflow.com/a/27317936/388951
+	geometry.computeBoundingBox();
+	const {min, max} = geometry.boundingBox;
+	const offset = new three.Vector2(0 - min.x, 0 - min.y);
+	const range = new three.Vector2(max.x - min.x, max.y - min.y);
+	const faces = geometry.faces;
+
+	geometry.faceVertexUvs[0] = [];
+
+	for (let i = 0; i < faces.length; i++) {
+		const v1 = geometry.vertices[faces[i].a];
+		const v2 = geometry.vertices[faces[i].b];
+		const v3 = geometry.vertices[faces[i].c];
+
+		geometry.faceVertexUvs[0].push([
+			new three.Vector2((v1.x + offset.x) / range.x, (v1.y + offset.y) / range.y),
+			new three.Vector2((v2.x + offset.x) / range.x, (v2.y + offset.y) / range.y),
+			new three.Vector2((v3.x + offset.x) / range.x, (v3.y + offset.y) / range.y),
+		]);
+	}
+	geometry.uvsNeedUpdate = true;
+}
+
+export function flatMeshFromVertices(vertices: number[][], material: three.Material) {
+	const shape = shapeFromVertices(vertices);
+	const geometry = new three.ShapeGeometry(shape);
+	addUVMappingToGeometry(geometry);
+
+
+	const mesh = new three.Mesh(geometry, material);
+	mesh.material.side = three.DoubleSide; // visible from above and below.
+	mesh.rotation.set(Math.PI / 2, 0, 0);
+	return mesh;
+}
+
+export function flatRectMesh(
+	{top, left, right, bottom}: {top: number; left: number; right: number; bottom: number},
+	material: three.Material,
+) {
+	return flatMeshFromVertices(
+		[[left, top], [right, top], [right, bottom], [left, bottom]],
+		material,
+	);
 }
