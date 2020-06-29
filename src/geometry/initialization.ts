@@ -69,9 +69,9 @@ async function fetchJson<T>(url: string): Promise<T> {
 export default async function init (): Promise<InitResources> {
 	const loadStartMs = window.performance.now();
 	const geometry = await fetchJson<Geo>('geometry');
-
 	const loadEndMs = window.performance.now();
-	console.log('Loaded static resources in ', loadEndMs - loadStartMs, ' ms.');
+
+	console.log('Loaded static resources in', loadEndMs - loadStartMs, 'ms');
 
 	return{
 		geometry,

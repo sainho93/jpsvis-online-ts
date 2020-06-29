@@ -26,6 +26,7 @@ import * as three from 'three';
 import addSky from './effects/sky';
 import * as Stats  from 'stats.js'
 import {InitResources} from './initialization';
+import Postprocessing from './effects/postprocessing';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -50,15 +51,14 @@ export default class JPS3D {
 	private gui: typeof dat.gui.GUI;
 	private groundPlane: three.Object3D;
 	private stats: Stats;
+	private postprocessing: Postprocessing;
 
 	constructor(parentElement: HTMLElement, init: InitResources){
 		const startMs = window.performance.now();
 
 		this.parentElement = parentElement;
-		const width = parentElement.parentElement.clientWidth; // Content component
-		const height = parentElement.parentElement.clientHeight;
-
-		this.animate = this.animate.bind(this);
+		const width = parentElement.clientWidth;
+		const height = parentElement.clientHeight;
 
 		// three.js
 		this.renderer = new three.WebGLRenderer();
@@ -67,26 +67,25 @@ export default class JPS3D {
 		this.renderer.domElement.oncontextmenu = (e: PointerEvent) => false;
 		this.renderer.domElement.tabIndex = 1;
 		this.renderer.setSize(width, height);
+
 		this.scene = new three.Scene();
 		this.camera = new three.PerspectiveCamera(75, width / height, 1, 20000);
 		parentElement.appendChild(this.renderer.domElement);
 
-		// dat.gui
 		// Add sky
 		this.gui = new dat.gui.GUI();
-		addSky(this.gui, this.scene);
+		addSky(this.scene);
 
-		// Add ground
-		// this.groundPlane = this.scene.getObjectByName('Land');
-
-		// const sceneFolder = this.gui.addFolder('Scene');
-		// const sceneOptions = {
-		// 	showGroundPlane: true,
-		// };
-		// sceneFolder.add(sceneOptions, 'showGroundPlane').onChange((visible: boolean) => {
-		// 	this.groundPlane.visible = visible;
-		// });
-
+		//  Post-processing passes apply filters and effects
+		//  to the image buffer before it is eventually rendered to the screen.
+		this.postprocessing = new Postprocessing(
+			this.camera,
+			this.scene,
+			this.renderer,
+			this.gui,
+			width,
+			height,
+		);
 
 		// stats.js
 		this.stats = new Stats();
@@ -94,16 +93,16 @@ export default class JPS3D {
 		parentElement.appendChild(this.stats.dom);
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
 
+		this.animate = this.animate.bind(this);
 		this.animate();
-
 
 		const endMs = window.performance.now();
 
-		console.log('Initialized three.js scene in ', endMs - startMs, ' ms.');
-
+		console.log('Initialized three.js scene in', endMs - startMs, 'ms');
 	}
 
 	animate() {
+		this.postprocessing.render();
 		this.stats.update();
 
 		requestAnimationFrame(this.animate);

@@ -104,3 +104,7 @@ Temporary Items
 /node_modules/
 /.idea/
 /static/
+/yarn-error.log
+/package-lock.json
+/src/server/geometry.xml
+/src/server/trajectory.xml

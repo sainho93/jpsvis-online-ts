@@ -24,12 +24,11 @@
 import React from 'react'
 import SwitchBar from './switchbar'
 import './view-page.css'
-import { Row, Col } from 'antd'
 import init from '../geometry/initialization';
 import startScene from '../geometry/datamanager';
 
-import { Layout, Menu } from 'antd';
-const { Header, Content, Footer} = Layout;
+import { Layout } from 'antd';
+const { Content, Footer} = Layout;
 
 class ViewPage extends React.Component {
   // Load Three.JS after <canvas/> node is mounted into DOM
@@ -45,7 +44,7 @@ class ViewPage extends React.Component {
     return (
       <Layout className="view-page-layout">
         <Content className="view-page-layout-content">
-          <div id="canvas" >
+          <div id="canvas" className="view-page-canvas">
           </div>
         </Content>
         <Footer/>
