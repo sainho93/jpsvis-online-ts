@@ -1,5 +1,5 @@
 /*
- * \file meterials.ts
+ * \file materials.ts
  * \date 2020 - 6 - 26
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.

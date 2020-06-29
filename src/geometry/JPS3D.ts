@@ -27,6 +27,9 @@ import addSky from './effects/sky';
 import * as Stats  from 'stats.js'
 import {InitResources} from './initialization';
 import Postprocessing from './effects/postprocessing';
+import {makeStaticObjects} from './geometry';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -69,8 +72,17 @@ export default class JPS3D {
 		this.renderer.setSize(width, height);
 
 		this.scene = new three.Scene();
+
 		this.camera = new three.PerspectiveCamera(75, width / height, 1, 20000);
 		parentElement.appendChild(this.renderer.domElement);
+
+		// controls
+		const controls = new OrbitControls( this.camera, this.renderer.domElement );
+		controls.maxPolarAngle = Math.PI * 0.5;
+		controls.minDistance = 1000;
+		controls.maxDistance = 5000;
+
+
 
 		// Add sky
 		this.gui = new dat.gui.GUI();
@@ -107,5 +119,6 @@ export default class JPS3D {
 
 		requestAnimationFrame(this.animate);
 	}
+
 
 }
