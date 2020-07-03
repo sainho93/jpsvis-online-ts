@@ -46,3 +46,12 @@ export const LAND = new three.MeshPhysicalMaterial({
 	polygonOffsetFactor: +2,
 	polygonOffsetUnits: 1,
 });
+
+export const BUILDING= new three.MeshPhysicalMaterial({
+	color: 0xffffff,
+	metalness: 0,
+	roughness: 0.8,
+	clearcoat: 0.6,
+	clearcoatRoughness: 1.0,
+	reflectivity: 0.2,
+});

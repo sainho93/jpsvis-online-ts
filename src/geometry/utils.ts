@@ -103,12 +103,4 @@ export function flatMeshFromVertices(vertices: number[][], material: three.Mater
 	return mesh;
 }
 
-export function flatRectMesh(
-	{top, left, right, bottom}: {top: number; left: number; right: number; bottom: number},
-	material: three.Material,
-) {
-	return flatMeshFromVertices(
-		[[left, top], [right, top], [right, bottom], [left, bottom]],
-		material,
-	);
-}
+

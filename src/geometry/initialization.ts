@@ -21,25 +21,10 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as _ from 'lodash'
-import * as three from 'three'
-import {loadOBJFile} from './utils';
-
-const textureLoader = new three.TextureLoader();
-
-export interface Geometry {
-	version: string;
-	caption: string;
-	'xmlns:xsi': string;
-	unit: string
-}
-
-export interface Geo {
-	geo: Geometry;
-}
+import {GeoFile} from './geometry'
 
 export interface InitResources {
-	geometry: Geo;
+	geometryData: GeoFile;
 	geometryRootEl: HTMLElement;
 }
 
@@ -68,13 +53,13 @@ async function fetchJson<T>(url: string): Promise<T> {
 
 export default async function init (): Promise<InitResources> {
 	const loadStartMs = window.performance.now();
-	const geometry = await fetchJson<Geo>('geometry');
+	const data = await fetchJson<GeoFile>('geometry');
 	const loadEndMs = window.performance.now();
 
 	console.log('Loaded static resources in', loadEndMs - loadStartMs, 'ms');
 
 	return{
-		geometry,
+		geometryData: data,
 		geometryRootEl: getOrThrow('canvas')
 	}
 }

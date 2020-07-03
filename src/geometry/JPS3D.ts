@@ -35,6 +35,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 // @ts-ignore
 import * as dat from 'dat.gui/build/dat.gui.js';
 
+const AMBIENT_LIGHT_COLOR = 0x404040;
 
 export interface Params {
 	onClick: (
@@ -55,6 +56,7 @@ export default class JPS3D {
 	private groundPlane: three.Object3D;
 	private stats: Stats;
 	private postprocessing: Postprocessing;
+	private controls: OrbitControls;
 
 	constructor(parentElement: HTMLElement, init: InitResources){
 		const startMs = window.performance.now();
@@ -77,20 +79,41 @@ export default class JPS3D {
 		parentElement.appendChild(this.renderer.domElement);
 
 		// controls
-		const controls = new OrbitControls( this.camera, this.renderer.domElement );
-		controls.maxPolarAngle = Math.PI * 0.5;
-		controls.minDistance = 1000;
-		controls.maxDistance = 5000;
+		this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+
+		this.controls.maxPolarAngle = Math.PI * 0.5;
+		this.controls.minDistance = 10;
+		this.controls.maxDistance = 5000;
+
+		// light
+		// Set ambient light
+		const ambient = new three.AmbientLight(AMBIENT_LIGHT_COLOR);
+		this.scene.add(ambient);
+
+		// White directional light at half intensity shining from the top o simulate daylight.
+		// This light can cast shadows
+		const directionalLight = new three.DirectionalLight( 0xffffff, 0.5 );
+		directionalLight.castShadow = true;            // default false
+
+		//Set up shadow properties for the light
+		directionalLight.shadow.mapSize.width = 512;  // default
+		directionalLight.shadow.mapSize.height = 512; // default
+		directionalLight.shadow.camera.near = 0.5;    // default
+		directionalLight.shadow.camera.far = 500;     // default
+
+		this.scene.add( directionalLight );
 
 		// Add geometry
-		const staticGroup: three.Group = makeStaticObjects(init.geometry);
+		const staticGroup: three.Group = makeStaticObjects(init.geometryData);
 		this.scene.add(staticGroup);
 
 		// Add gound plane
 		this.groundPlane = this.scene.getObjectByName('Land');
 
-		// Add sky
+		// Add dat gui
 		this.gui = new dat.gui.GUI();
+
+		// Add sky
 		addSky(this.scene);
 
 		//  Post-processing passes apply filters and effects
@@ -113,6 +136,7 @@ export default class JPS3D {
 		this.animate = this.animate.bind(this);
 		this.animate();
 
+
 		const endMs = window.performance.now();
 
 		console.log('Initialized three.js scene in', endMs - startMs, 'ms');
@@ -124,6 +148,4 @@ export default class JPS3D {
 
 		requestAnimationFrame(this.animate);
 	}
-
-
 }
