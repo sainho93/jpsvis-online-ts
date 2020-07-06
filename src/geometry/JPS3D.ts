@@ -27,7 +27,7 @@ import addSky from './effects/sky';
 import * as Stats  from 'stats.js'
 import {InitResources} from './initialization';
 import Postprocessing from './effects/postprocessing';
-import {makeStaticObjects} from './geometry';
+import {Geometry, makeStaticObjects} from './geometry';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 
@@ -75,8 +75,12 @@ export default class JPS3D {
 
 		this.scene = new three.Scene();
 
-		this.camera = new three.PerspectiveCamera(75, width / height, 1, 20000);
+		this.camera = new three.PerspectiveCamera(75, width / height, 0.1, 1000);
 		parentElement.appendChild(this.renderer.domElement);
+
+		// axis
+		const axesHelper = new three.AxesHelper( 1000 );
+		this.scene.add( axesHelper );
 
 		// controls
 		this.controls = new OrbitControls( this.camera, this.renderer.domElement );
