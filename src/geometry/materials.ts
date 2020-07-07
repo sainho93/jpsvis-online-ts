@@ -48,3 +48,12 @@ export const BUILDING= new three.MeshPhysicalMaterial({
 	clearcoatRoughness: 1.0,
 	reflectivity: 0.2,
 });
+
+export const TRANSITION= new three.MeshPhysicalMaterial({
+	color: '#2CAEBE',
+	metalness: 0,
+	roughness: 0.8,
+	clearcoat: 0.6,
+	clearcoatRoughness: 1.0,
+	reflectivity: 0.2,
+});

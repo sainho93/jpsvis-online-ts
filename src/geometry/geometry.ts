@@ -27,7 +27,7 @@
 import * as _ from 'lodash'
 import * as three from 'three';
 
-import {LAND, BUILDING} from './materials'
+import {LAND, BUILDING, TRANSITION} from './materials'
 import {flatMeshFromVertices} from './utils'
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
@@ -70,6 +70,19 @@ interface Vertex {
 	py: string
 }
 
+interface Transitions{
+	transition: Transition;
+}
+
+interface Transition {
+	id: string;
+	caption: string;
+	type: string;
+	room1_id: string;
+	room2_id: string;
+	vertex: Vertex[];
+}
+
 /**
  * A class to contain information and methods for geometry
  **/
@@ -79,6 +92,7 @@ export default class Geometry {
 	private version: string;
 	private unit: string;
 	private rooms: Rooms | Room[];
+	private transitions: Transitions | Transition[];
 
 	constructor (file: GeoFile) {
 		this.geoFile = file;
@@ -91,6 +105,7 @@ export default class Geometry {
 		this.version = file.geometry.version;
 		this.unit = file.geometry.unit;
 		this.rooms = file.geometry.rooms;
+		this.transitions = file.geometry.transitions;
 	}
 
 	protected validateFile(file: GeoFile): boolean{
@@ -131,6 +146,52 @@ export default class Geometry {
 		}
 
 		return roomGroup;
+	}
+
+	createTransitions(): three.Group{
+		const transitionGroup = new three.Group();
+
+		if(Array.isArray(this.transitions))
+		{
+			for(let i = 0; i < (this.rooms as Room[]).length; i++) {
+				const transitionMesh = new three.Mesh(this.makeTransition((this.transitions as Transition[])[i]), TRANSITION)
+				transitionGroup.add(transitionMesh);
+			}
+		}else {
+			const transitionMesh = new three.Mesh(this.makeTransition((this.transitions as Transitions).transition), TRANSITION);
+			transitionGroup.add(transitionMesh);
+		}
+
+		return transitionGroup;
+
+	}
+
+	//TODO: Using generics to reduce duplicated code in makePolygon
+	protected makeTransition(transition: Transition): three.BoxBufferGeometry{
+		if(transition.vertex.length != 2){
+			console.error( 'The format of polygon is wrong', transition );
+			return;
+		}else {
+			const point1: three.Vector2 = new three.Vector2(parseFloat(transition.vertex[0].px),
+				parseFloat(transition.vertex[0].py));
+			const point2: three.Vector2 = new three.Vector2(parseFloat(transition.vertex[1].px),
+				parseFloat(transition.vertex[1].py));
+
+			// Length of wall
+			// length = sqrt(|x1-x2|*|x1-x2| + |y1-y2|*|y1-y2|)
+			const length: number = Math.sqrt(Math.pow(Math.abs(point1.x - point2.x),2)
+				+ Math.pow(Math.abs(point1.y - point2.y),2));
+
+			// Rotation angle
+			// angle = arctan(|y1-y2|/|x1-x2|) * PI/180
+			const angle = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
+
+			const exit: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.05);
+			exit.rotateY(angle);
+			exit.translate((point1.x + point2.x)/2, 0.5, (point1.y + point2.y)/2);
+
+			return exit;
+		}
 	}
 
 	protected makeRoom (room: Room): three.Group{

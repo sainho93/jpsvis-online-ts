@@ -1,0 +1,93 @@
+{
+  "geometry": {
+    "version": "0.8",
+    "caption": "corner",
+    "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "xsi:noNamespaceSchemaLocation": "http://xsd.jupedsim.org/jps_geometry.xsd",
+    "unit": "m",
+    "rooms": {
+      "room": {
+        "id": "0",
+        "caption": "hall",
+        "subroom": {
+          "id": "0",
+          "caption": "hall",
+          "class": "corridor",
+          "A_x": "0",
+          "B_y": "0",
+          "C_z": "0",
+          "polygon": [
+            {
+              "caption": "wall",
+              "vertex": [
+                {
+                  "px": "10",
+                  "py": "0"
+                },
+                {
+                  "px": "0",
+                  "py": "0"
+                }
+              ]
+            },
+            {
+              "caption": "wall",
+              "vertex": [
+                {
+                  "px": "0",
+                  "py": "0"
+                },
+                {
+                  "px": "0",
+                  "py": "2"
+                }
+              ]
+            },
+            {
+              "caption": "wall",
+              "vertex": [
+                {
+                  "px": "0",
+                  "py": "2"
+                },
+                {
+                  "px": "10",
+                  "py": "2"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "transitions": {
+      "transition": {
+        "id": "0",
+        "caption": "exit",
+        "type": "emergency",
+        "room1_id": "0",
+        "room2_id": "-1",
+        "vertex": [
+          {
+            "px": "10",
+            "py": "0"
+          },
+          {
+            "px": "10",
+            "py": "2"
+          }
+        ]
+      }
+    },
+    "undefine": {
+      "Room": {
+        "id": "-1",
+        "caption": "Not assigned lines",
+        "class": "container",
+        "subroom": {
+          "id": "-1"
+        }
+      }
+    }
+  }
+}
