@@ -27,7 +27,7 @@ import addSky from './effects/sky';
 import * as Stats  from 'stats.js'
 import {InitResources} from './initialization';
 import Postprocessing from './effects/postprocessing';
-import {Geometry, makeStaticObjects} from './geometry';
+import Geometry from './geometry';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 
@@ -57,6 +57,8 @@ export default class JPS3D {
 	private stats: Stats;
 	private postprocessing: Postprocessing;
 	private controls: OrbitControls;
+	private geometry: Geometry;
+	private subroom: three.Object3D;
 
 	constructor(parentElement: HTMLElement, init: InitResources){
 		const startMs = window.performance.now();
@@ -86,7 +88,7 @@ export default class JPS3D {
 		this.controls = new OrbitControls( this.camera, this.renderer.domElement );
 
 		this.controls.maxPolarAngle = Math.PI * 0.5;
-		this.controls.minDistance = 10;
+		this.controls.minDistance = 5;
 		this.controls.maxDistance = 5000;
 
 		// light
@@ -108,11 +110,12 @@ export default class JPS3D {
 		this.scene.add( directionalLight );
 
 		// Add geometry
-		const staticGroup: three.Group = makeStaticObjects(init.geometryData);
-		this.scene.add(staticGroup);
+		this.geometry = new Geometry(init.geometryData);
+		this.scene.add(this.geometry.createRooms());
+		this.scene.add(this.geometry.createGround());
 
-		// Add gound plane
 		this.groundPlane = this.scene.getObjectByName('Land');
+
 
 		// Add dat gui
 		this.gui = new dat.gui.GUI();

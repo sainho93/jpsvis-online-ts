@@ -22,36 +22,6 @@
  */
 
 import * as three from 'three';
-import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader'
-
-
-const OBJ_LOADER = new OBJLoader;
-
-/** Set a material on all meshes in an object. */
-export function setMaterial(obj: three.Object3D, material: three.Material) {
-	obj.traverse(child => {
-		if (child instanceof three.Mesh) {
-			child.material = material;
-		}
-	});
-}
-
-/** Load an OBJ file, returning a Promise for it. Optionally adds a material. */
-export function loadOBJFile(url: string, material?: three.Material): Promise<three.Object3D> {
-	return new Promise<three.Object3D>((resolve, reject) => {
-		OBJ_LOADER.load(
-			url,
-			obj => {
-				if (material) {
-					setMaterial(obj, material);
-				}
-				resolve(obj);
-			},
-			() => {},
-			reject,
-		);
-	});
-}
 
 /** Return a flat mesh from a polygon's vertices. The polygon will have y=0. */
 

@@ -27,13 +27,6 @@
 
 import * as three from 'three';
 
-const textureLoader = new three.TextureLoader();
-
-const loadRepeatedTexture = (url: string) =>
-	textureLoader.load(url, texture => {
-		texture.wrapS = texture.wrapT = three.RepeatWrapping;
-	});
-
 export const LAND = new three.MeshPhysicalMaterial({
 	color: 0x888888,
 	metalness: 0.1,
