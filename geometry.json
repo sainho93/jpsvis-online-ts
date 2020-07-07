@@ -6,78 +6,271 @@
     "xsi:noNamespaceSchemaLocation": "http://xsd.jupedsim.org/jps_geometry.xsd",
     "unit": "m",
     "rooms": {
-      "room": {
-        "id": "0",
-        "caption": "hall",
-        "subroom": {
+      "room": [
+        {
           "id": "0",
-          "caption": "hall",
-          "class": "corridor",
-          "A_x": "0",
-          "B_y": "0",
-          "C_z": "0",
-          "polygon": [
+          "caption": "bottleneck",
+          "subroom": {
+            "id": "0",
+            "caption": "bottleneck",
+            "class": "corridor",
+            "A_x": "0",
+            "B_y": "0",
+            "C_z": "0",
+            "polygon": [
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "65",
+                    "py": "104"
+                  },
+                  {
+                    "px": "62",
+                    "py": "104"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "62",
+                    "py": "104"
+                  },
+                  {
+                    "px": "62",
+                    "py": "102.6"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "62",
+                    "py": "101.4"
+                  },
+                  {
+                    "px": "62",
+                    "py": "100"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "62",
+                    "py": "100"
+                  },
+                  {
+                    "px": "65",
+                    "py": "100"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "0",
+          "caption": "bottleneck",
+          "subroom": {
+            "id": "0",
+            "caption": "bottleneck",
+            "class": "corridor",
+            "A_x": "0",
+            "B_y": "0",
+            "C_z": "0",
+            "polygon": [
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "62",
+                    "py": "102.6"
+                  },
+                  {
+                    "px": "60",
+                    "py": "102.6"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "60",
+                    "py": "101.4"
+                  },
+                  {
+                    "px": "62",
+                    "py": "101.4"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "0",
+          "caption": "bottleneck",
+          "subroom": {
+            "id": "0",
+            "caption": "bottleneck",
+            "class": "corridor",
+            "A_x": "0",
+            "B_y": "0",
+            "C_z": "0",
+            "polygon": [
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "60",
+                    "py": "102.6"
+                  },
+                  {
+                    "px": "60",
+                    "py": "104"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "60",
+                    "py": "104"
+                  },
+                  {
+                    "px": "56",
+                    "py": "104"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "56",
+                    "py": "100"
+                  },
+                  {
+                    "px": "60",
+                    "py": "100"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "60",
+                    "py": "100"
+                  },
+                  {
+                    "px": "60",
+                    "py": "101.4"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "1",
+          "caption": "bottleneckHolding",
+          "subroom": {
+            "id": "1",
+            "caption": "bottleneckHolding",
+            "class": "corridor",
+            "A_x": "0",
+            "B_y": "0",
+            "C_z": "0",
+            "polygon": [
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "56",
+                    "py": "104"
+                  },
+                  {
+                    "px": "50",
+                    "py": "104"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "50",
+                    "py": "104"
+                  },
+                  {
+                    "px": "50",
+                    "py": "100"
+                  }
+                ]
+              },
+              {
+                "caption": "wall",
+                "vertex": [
+                  {
+                    "px": "50",
+                    "py": "100"
+                  },
+                  {
+                    "px": "56",
+                    "py": "100"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "transitions": {
+      "transition": [
+        {
+          "id": "2",
+          "caption": "exit",
+          "type": "emergency",
+          "room1_id": "0",
+          "room2_id": "-1",
+          "vertex": [
             {
-              "caption": "wall",
-              "vertex": [
-                {
-                  "px": "10",
-                  "py": "0"
-                },
-                {
-                  "px": "0",
-                  "py": "0"
-                }
-              ]
+              "px": "65",
+              "py": "104"
             },
             {
-              "caption": "wall",
-              "vertex": [
-                {
-                  "px": "0",
-                  "py": "0"
-                },
-                {
-                  "px": "0",
-                  "py": "2"
-                }
-              ]
+              "px": "65",
+              "py": "100"
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "caption": "exit",
+          "type": "emergency",
+          "room1_id": "0",
+          "room2_id": "1",
+          "vertex": [
+            {
+              "px": "56",
+              "py": "104"
             },
             {
-              "caption": "wall",
-              "vertex": [
-                {
-                  "px": "0",
-                  "py": "2"
-                },
-                {
-                  "px": "10",
-                  "py": "2"
-                }
-              ]
+              "px": "56",
+              "py": "100"
             }
           ]
         }
-      }
-    },
-    "transitions": {
-      "transition": {
-        "id": "0",
-        "caption": "exit",
-        "type": "emergency",
-        "room1_id": "0",
-        "room2_id": "-1",
-        "vertex": [
-          {
-            "px": "10",
-            "py": "0"
-          },
-          {
-            "px": "10",
-            "py": "2"
-          }
-        ]
-      }
+      ]
     },
     "undefine": {
       "Room": {

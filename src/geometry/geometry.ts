@@ -42,13 +42,13 @@ interface GeoFile {
 }
 
 interface Rooms {
-	room: Room
+	room: Room | Room[]
 }
 
 interface Room {
 	id: string;
 	caption: string;
-	subroom: Subroom | Subroom[];
+	subroom: Subroom;
 }
 
 interface Subroom {
@@ -71,7 +71,7 @@ interface Vertex {
 }
 
 interface Transitions{
-	transition: Transition;
+	transition: Transition | Transition[];
 }
 
 interface Transition {
@@ -91,8 +91,8 @@ export default class Geometry {
 	private geoFile: GeoFile;
 	private version: string;
 	private unit: string;
-	private rooms: Rooms | Room[];
-	private transitions: Transitions | Transition[];
+	private rooms: Rooms;
+	private transitions: Transitions;
 
 	constructor (file: GeoFile) {
 		this.geoFile = file;
@@ -120,10 +120,10 @@ export default class Geometry {
 
 	createGround(): three.Mesh{
 		const groundMesh: three.Mesh = this.makeGroundMesh({
-				left: 0,
-				top: 0,
-				right: 100,
-				bottom: 100},
+				left: -500,
+				top: -500,
+				right: 500,
+				bottom: 500},
 			LAND);
 		groundMesh.name = 'Land';
 		groundMesh.receiveShadow = true;
@@ -136,13 +136,13 @@ export default class Geometry {
 	createRooms(): three.Group{
 		const roomGroup = new three.Group();
 
-		if(Array.isArray(this.rooms))
+		if(Array.isArray(this.rooms.room))
 		{
-			for(let i = 0; i < (this.rooms as Room[]).length; i++) {
-				roomGroup.add(this.makeRoom((this.rooms as Room[])[i]));
+			for(let i = 0; i < (this.rooms.room as Room[]).length; i++) {
+				roomGroup.add(this.makeRoom((this.rooms.room as Room[])[i]));
 			}
 		}else{
-			roomGroup.add(this.makeRoom((this.rooms as Rooms).room));
+			roomGroup.add(this.makeRoom(this.rooms.room as Room));
 		}
 
 		return roomGroup;
@@ -151,14 +151,14 @@ export default class Geometry {
 	createTransitions(): three.Group{
 		const transitionGroup = new three.Group();
 
-		if(Array.isArray(this.transitions))
+		if(Array.isArray(this.transitions.transition))
 		{
-			for(let i = 0; i < (this.rooms as Room[]).length; i++) {
-				const transitionMesh = new three.Mesh(this.makeTransition((this.transitions as Transition[])[i]), TRANSITION)
+			for(let i = 0; i < (this.transitions.transition as Transition[]).length; i++) {
+				const transitionMesh = new three.Mesh(this.makeTransition((this.transitions.transition as Transition[])[i]), TRANSITION)
 				transitionGroup.add(transitionMesh);
 			}
 		}else {
-			const transitionMesh = new three.Mesh(this.makeTransition((this.transitions as Transitions).transition), TRANSITION);
+			const transitionMesh = new three.Mesh(this.makeTransition(this.transitions.transition as Transition), TRANSITION);
 			transitionGroup.add(transitionMesh);
 		}
 
@@ -197,13 +197,13 @@ export default class Geometry {
 	protected makeRoom (room: Room): three.Group{
 		const subroomGroup = new three.Group();
 
-		if(Array.isArray(room.subroom))
+		if(Array.isArray(room))
 		{
-			for(let i = 0; i < ((room.subroom as Subroom[]).length); i++) {
-				subroomGroup.add(this.makeSubroom(room.subroom[i]));
+			for(let i = 0; i < room.length; i++) {
+				subroomGroup.add(this.makeSubroom(room[i].subroom));
 			}
 		}else{
-			subroomGroup.add(this.makeSubroom(room.subroom as Subroom));
+			subroomGroup.add(this.makeSubroom(room.subroom));
 		}
 
 		return subroomGroup;
