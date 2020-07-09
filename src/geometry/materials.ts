@@ -1,10 +1,10 @@
 /*
  * \file materials.ts
- * \date 2020 - 6 - 26
+ * \date 2020 - 7 - 9
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
- * \section Lincense
+ * \section License
  * This file is part of JuPedSim.
  *
  * JuPedSim is free software: you can redistribute it and/or modify
@@ -19,50 +19,52 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * \section Description
  */
 
 /**
  * Materials used in three.js scenes.
  */
 
-import * as three from 'three';
+import * as three from 'three'
 
 export const LAND = new three.MeshPhysicalMaterial({
-	color: 0x888888,
-	metalness: 0.1,
-	roughness: 1.0,
-	clearcoat: 0.1,
-	clearcoatRoughness: 1.0,
-	reflectivity: 0.05,
-	// We use polygonOffset to counter z-fighting with roadways.
-	polygonOffset: true,
-	polygonOffsetFactor: +2,
-	polygonOffsetUnits: 1,
-});
+  color: 0x888888,
+  metalness: 0.1,
+  roughness: 1.0,
+  clearcoat: 0.1,
+  clearcoatRoughness: 1.0,
+  reflectivity: 0.05,
+  // We use polygonOffset to counter z-fighting with roadways.
+  polygonOffset: true,
+  polygonOffsetFactor: +2,
+  polygonOffsetUnits: 1
+})
 
-export const BUILDING= new three.MeshPhysicalMaterial({
-	color: 0xffffff,
-	metalness: 0,
-	roughness: 0.8,
-	clearcoat: 0.6,
-	clearcoatRoughness: 1.0,
-	reflectivity: 0.2,
-});
+export const BUILDING = new three.MeshPhysicalMaterial({
+  color: 0xffffff,
+  metalness: 0,
+  roughness: 0.8,
+  clearcoat: 0.6,
+  clearcoatRoughness: 1.0,
+  reflectivity: 0.2
+})
 
-export const TRANSITION= new three.MeshPhysicalMaterial({
-	color: '#2CAEBE',
-	metalness: 0,
-	roughness: 0.8,
-	clearcoat: 0.6,
-	clearcoatRoughness: 1.0,
-	reflectivity: 0.2,
-});
+export const TRANSITION = new three.MeshPhysicalMaterial({
+  color: '#2CAEBE',
+  metalness: 0,
+  roughness: 0.8,
+  clearcoat: 0.6,
+  clearcoatRoughness: 1.0,
+  reflectivity: 0.2
+})
 
-export const STAIR= new three.MeshPhysicalMaterial({
-	color: '#BDE9C9',
-	metalness: 0,
-	roughness: 0.8,
-	clearcoat: 0.6,
-	clearcoatRoughness: 1.0,
-	reflectivity: 0.2,
-});
+export const STAIR = new three.MeshPhysicalMaterial({
+  color: '#BDE9C9',
+  metalness: 0,
+  roughness: 0.8,
+  clearcoat: 0.6,
+  clearcoatRoughness: 1.0,
+  reflectivity: 0.2
+})

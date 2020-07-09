@@ -1,10 +1,10 @@
 /*
  * \file switchbar.js
- * \date 2020 - 6 - 22
+ * \date 2020 - 7 - 9
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
- * \section Lincense
+ * \section License
  * This file is part of JuPedSim.
  *
  * JuPedSim is free software: you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * \section Description
  */
 
 import React from 'react'

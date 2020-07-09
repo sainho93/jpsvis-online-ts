@@ -1,14 +1,21 @@
 {
+    // An environment defines global variables that are predefined.
     "env": {
+        // Browser global variables.
         "browser": true,
+        // Adds all ECMAScript 2020 globals and automatically sets the ecmaVersion parser option to 11.
         "es2020": true
     },
+    // Extend the set of enabled rules from base configurations.
     "extends": [
-        "plugin:react/recommended",
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
+        "eslint:recommended", // A subset of core rules from major versions of ESLint that report common problems
+        "plugin:react/recommended", // A subset of rules from eslint-plugin-react
+        "plugin:@typescript-eslint/recommended" // A subset of rules from typescript-eslint
     ],
+
+    // A parser that converts TypeScript into an ESTree-compatible form so it can be used in ESLint.
     "parser": "@typescript-eslint/parser",
+    // Specify the JavaScript language options you want to support
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true

@@ -4,7 +4,7 @@
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
- * \section Lincense
+ * \section License
  * This file is part of JuPedSim.
  *
  * JuPedSim is free software: you can redistribute it and/or modify
@@ -21,16 +21,13 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  *
  * \section Description
- *
  */
 
 import * as _ from 'lodash'
 import * as three from 'three';
 
-import {LAND, BUILDING, TRANSITION, STAIR} from './materials'
-import {flatMeshFromVertices} from './utils'
+import {BUILDING, TRANSITION, STAIR} from './materials'
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import {parse} from "@typescript-eslint/parser";
 
 
 /**
@@ -103,7 +100,7 @@ interface Transition {
  **/
 
 export default class Geometry {
-	private geoFile: GeoFile;
+	private readonly geoFile: GeoFile;
 	private version: string;
 	private unit: string;
 	private rooms: Rooms;
@@ -133,23 +130,54 @@ export default class Geometry {
 		}
 	}
 
-	createGround(): three.Mesh{
-		const groundMesh: three.Mesh = this.makeGroundMesh({
-				left: -500,
-				top: -500,
-				right: 500,
-				bottom: 500},
-			LAND);
-		groundMesh.name = 'Land';
-		groundMesh.receiveShadow = true;
+	createGround(subroom: Subroom): three.BoxBufferGeometry{
+		let maxX = 0;
+		let minX = 0;
+		let maxY = 0;
+		let minY = 0;
 
-		console.log('Loaded ground plane');
+		if(Array.isArray(subroom.polygon)){
+			for(let i = 0; i < (subroom.polygon as Polygon[]).length; i++){
+				const point1 = subroom.polygon[i].vertex[0];
+				const point2 = subroom.polygon[i].vertex[1];
+				if(parseFloat(point1.px) >= maxX){
+					maxX = parseFloat(point1.px);
+				}else if(parseFloat(point1.px) <= minX){
+					minX = parseFloat(point1.px);
+				}
 
-		return groundMesh;
+				if(parseFloat(point1.py) >= maxY){
+					maxY = parseFloat(point1.py);
+				}else if(parseFloat(point1.py) <= minY){
+					minY = parseFloat(point1.py);
+				}
+
+				if(parseFloat(point2.px) >= maxX){
+					maxX = parseFloat(point2.px);
+				}else if(parseFloat(point2.px) <= minX){
+					minX = parseFloat(point2.px);
+				}
+
+				if(parseFloat(point2.py) >= maxY){
+					maxY = parseFloat(point2.py);
+				}else if(parseFloat(point2.py) <= minY){
+					minY = parseFloat(point2.py);
+				}
+			}
+		}
+
+		const length = Math.abs(maxX - minX);
+		const width  = Math.abs(maxY - minY);
+
+		const ground = new three.BoxBufferGeometry(length, 0.01, width);
+		ground.translate((maxX + minX)/2, 0, (maxY + minY)/2);
+
+		return ground;
 	}
 
 	createRooms(): three.Group{
 		const roomGroup = new three.Group();
+		roomGroup.name = 'Rooms';
 
 		if(Array.isArray(this.rooms.room))
 		{
@@ -166,6 +194,7 @@ export default class Geometry {
 
 	createTransitions(): three.Group{
 		const transitionGroup = new three.Group();
+		transitionGroup.name = 'Transitions'
 
 		if(Array.isArray(this.transitions.transition))
 		{
@@ -182,7 +211,7 @@ export default class Geometry {
 
 	}
 
-	//TODO: Using generics to reduce duplicated code in makePolygon
+	//TODO: Refactoring generics to reduce duplicated code in makePolygon
 	protected makeTransition(transition: Transition): three.BoxBufferGeometry{
 		if(transition.vertex.length != 2){
 			console.error( 'The format of polygon is wrong', transition );
@@ -250,6 +279,7 @@ export default class Geometry {
 
 				}
 
+				polygons.push(this.createGround(subroom));
 				subroomGeometry = BufferGeometryUtils.mergeBufferGeometries(polygons);
 			}
 
@@ -378,16 +408,6 @@ export default class Geometry {
 		stair.translate(center.x, (elevationUp + elevationDown)/2, center.y);
 
 		return stair;
-	}
-
-	protected makeGroundMesh(
-		{top, left, right, bottom}: {top: number; left: number; right: number; bottom: number},
-		material: three.Material,
-	) {
-		return flatMeshFromVertices(
-			[[left, top], [right, top], [right, bottom], [left, bottom]],
-			material,
-		);
 	}
 }
 

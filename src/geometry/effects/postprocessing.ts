@@ -4,7 +4,7 @@
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
- * \section Lincense
+ * \section License
  * This file is part of JuPedSim.
  *
  * JuPedSim is free software: you can redistribute it and/or modify
@@ -21,7 +21,10 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import * as dat from 'dat.gui/build/dat.gui.js';
+
 import * as three from 'three';
 import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass'

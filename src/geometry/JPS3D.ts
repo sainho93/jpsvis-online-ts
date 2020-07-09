@@ -1,10 +1,10 @@
 /*
  * \file JPS3D.ts
- * \date 2020 - 6 - 25
+ * \date 2020 - 7 - 9
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
  *
- * \section Lincense
+ * \section License
  * This file is part of JuPedSim.
  *
  * JuPedSim is free software: you can redistribute it and/or modify
@@ -19,17 +19,18 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * \section Description
  */
 
 import * as _ from 'lodash';
 import * as three from 'three';
 import addSky from './effects/sky';
-import * as Stats  from 'stats.js'
+import * as Stats from 'stats.js'
 import {InitResources} from './initialization';
 import Postprocessing from './effects/postprocessing';
 import Geometry from './geometry';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -60,7 +61,7 @@ export default class JPS3D {
 	private geometry: Geometry;
 	private subroom: three.Object3D;
 
-	constructor(parentElement: HTMLElement, init: InitResources){
+	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
 
 		this.parentElement = parentElement;
@@ -81,11 +82,11 @@ export default class JPS3D {
 		parentElement.appendChild(this.renderer.domElement);
 
 		// axis
-		const axesHelper = new three.AxesHelper( 1000 );
-		this.scene.add( axesHelper );
+		const axesHelper = new three.AxesHelper(1000);
+		this.scene.add(axesHelper);
 
 		// controls
-		this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
 		this.controls.maxPolarAngle = Math.PI * 0.5;
 		this.controls.minDistance = 5;
@@ -98,7 +99,7 @@ export default class JPS3D {
 
 		// White directional light at half intensity shining from the top o simulate daylight.
 		// This light can cast shadows
-		const directionalLight = new three.DirectionalLight( 0xffffff, 0.5 );
+		const directionalLight = new three.DirectionalLight(0xffffff, 0.5);
 		directionalLight.castShadow = true;            // default false
 
 		//Set up shadow properties for the light
@@ -107,18 +108,16 @@ export default class JPS3D {
 		directionalLight.shadow.camera.near = 0.5;    // default
 		directionalLight.shadow.camera.far = 500;     // default
 
-		this.scene.add( directionalLight );
+		this.scene.add(directionalLight);
 
 		// Add geometry
 		this.geometry = new Geometry(init.geometryData);
 		this.scene.add(this.geometry.createRooms());
 		this.scene.add(this.geometry.createTransitions());
 
-		this.groundPlane = this.scene.getObjectByName('Land');
-
-
 		// Add dat gui
 		this.gui = new dat.gui.GUI();
+		//TODO: Add option to control whether present geometry (rooms, transitions)
 
 		// Add sky
 		addSky(this.scene);
@@ -143,13 +142,12 @@ export default class JPS3D {
 		this.animate = this.animate.bind(this);
 		this.animate();
 
-
 		const endMs = window.performance.now();
 
 		console.log('Initialized three.js scene in', endMs - startMs, 'ms');
 	}
 
-	animate() {
+	animate () {
 		this.postprocessing.render();
 		this.stats.update();
 
