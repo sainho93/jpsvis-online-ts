@@ -27,9 +27,10 @@
 import * as _ from 'lodash'
 import * as three from 'three';
 
-import {LAND, BUILDING, TRANSITION} from './materials'
+import {LAND, BUILDING, TRANSITION, STAIR} from './materials'
 import {flatMeshFromVertices} from './utils'
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import {parse} from "@typescript-eslint/parser";
 
 
 /**
@@ -57,6 +58,9 @@ interface Subroom {
 	closed: string;
 	class: string;
 	polygon: Polygon | Polygon[];
+	A_x: string;
+	B_y: string;
+	C_z: string
 
 }
 
@@ -188,8 +192,28 @@ export default class Geometry {
 
 			const exit: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.05);
 			exit.rotateY(angle);
-			exit.translate((point1.x + point2.x)/2, 0.5, (point1.y + point2.y)/2);
 
+
+			// Elevation
+			const room1Id = transition.room1_id;
+			const room2Id = transition.room2_id;
+
+			let elevation = 0;
+			if(Array.isArray(this.rooms.room)){
+				for(let i = 0; i<(this.rooms.room as Room[]).length; i++){
+					if((this.rooms.room[i].id === room1Id || this.rooms.room[i].id === room2Id)
+						&& this.rooms.room[i].subroom.class != 'stair'){
+						elevation = parseFloat(this.rooms.room[i].subroom.C_z)
+						break;
+					}
+				}
+			}else {
+				// Only 1 room, there can't be a stair, transition between room and outside
+				// Using C_z from subroom directly
+				elevation = parseFloat(this.rooms.room.subroom.C_z);
+			}
+
+			exit.translate((point1.x + point2.x)/2, elevation+0.5, (point1.y + point2.y)/2);
 			return exit;
 		}
 	}
@@ -213,20 +237,35 @@ export default class Geometry {
 		let subroomGeometry: three.BufferGeometry;
 
 		if(Array.isArray(subroom.polygon)){
-			const polygons: three.BufferGeometry[] = [];
+			// Subroom is stair
+			if(subroom.class === 'stair'){
+				const stairGeometry = this.makeStair(subroom);
+				const stairMesh = new three.Mesh(stairGeometry, STAIR);
+				stairMesh.name = subroom.caption;
+				return stairMesh;
 
-			for (let i = 0; i < (subroom.polygon as Polygon[]).length; i++) {
-				polygons.push(this.makePolygon(subroom.polygon[i]));
+			}else {
+				// Subroom has multi walls
+				const polygons: three.BufferGeometry[] = [];
+
+				for (let i = 0; i < (subroom.polygon as Polygon[]).length; i++) {
+					polygons.push(this.makePolygon(subroom.polygon[i]));
+				}
+
+				subroomGeometry = BufferGeometryUtils.mergeBufferGeometries(polygons);
 			}
 
-			const unmergeSubroomGeometry = BufferGeometryUtils.mergeBufferGeometries(polygons);
-			subroomGeometry = BufferGeometryUtils.mergeVertices(unmergeSubroomGeometry, 1);
-
 		}else{
+			// Subroom has only one wall
 			subroomGeometry = this.makePolygon((subroom.polygon as Polygon));
 		}
 
 		const subroomMesh = new three.Mesh(subroomGeometry, BUILDING);
+
+		// As a subroom, A_x and B_y will always be 0
+		const elevation = parseFloat(subroom.C_z);
+		subroomMesh.translateY(elevation);
+
 		subroomMesh.name = subroom.caption;
 
 		return subroomMesh;
