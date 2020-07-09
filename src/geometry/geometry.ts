@@ -133,19 +133,49 @@ export default class Geometry {
 		}
 	}
 
-	createGround(): three.Mesh{
-		const groundMesh: three.Mesh = this.makeGroundMesh({
-				left: -500,
-				top: -500,
-				right: 500,
-				bottom: 500},
-			LAND);
-		groundMesh.name = 'Land';
-		groundMesh.receiveShadow = true;
+	createGround(subroom: Subroom): three.BoxBufferGeometry{
+		let maxX = 0;
+		let minX = 0;
+		let maxY = 0;
+		let minY = 0;
 
-		console.log('Loaded ground plane');
+		if(Array.isArray(subroom.polygon)){
+			for(let i = 0; i < (subroom.polygon as Polygon[]).length; i++){
+				const point1 = subroom.polygon[i].vertex[0];
+				const point2 = subroom.polygon[i].vertex[1];
+				if(parseFloat(point1.px) >= maxX){
+					maxX = parseFloat(point1.px);
+				}else if(parseFloat(point1.px) <= minX){
+					minX = parseFloat(point1.px);
+				}
 
-		return groundMesh;
+				if(parseFloat(point1.py) >= maxY){
+					maxY = parseFloat(point1.py);
+				}else if(parseFloat(point1.py) <= minY){
+					minY = parseFloat(point1.py);
+				}
+
+				if(parseFloat(point2.px) >= maxX){
+					maxX = parseFloat(point2.px);
+				}else if(parseFloat(point2.px) <= minX){
+					minX = parseFloat(point2.px);
+				}
+
+				if(parseFloat(point2.py) >= maxY){
+					maxY = parseFloat(point2.py);
+				}else if(parseFloat(point2.py) <= minY){
+					minY = parseFloat(point2.py);
+				}
+			}
+		}
+
+		const length = Math.abs(maxX - minX);
+		const width  = Math.abs(maxY - minY);
+
+		const ground = new three.BoxBufferGeometry(length, 0.01, width);
+		ground.translate((maxX + minX)/2, 0, (maxY + minY)/2);
+
+		return ground;
 	}
 
 	createRooms(): three.Group{
@@ -250,6 +280,7 @@ export default class Geometry {
 
 				}
 
+				polygons.push(this.createGround(subroom));
 				subroomGeometry = BufferGeometryUtils.mergeBufferGeometries(polygons);
 			}
 
