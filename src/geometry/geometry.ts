@@ -61,7 +61,18 @@ interface Subroom {
 	A_x: string;
 	B_y: string;
 	C_z: string
+	up: Up;
+	down: Down;
+}
 
+interface Up{
+	px: string;
+	py: string
+}
+
+interface Down{
+	px: string;
+	py: string
 }
 
 interface Polygon {
@@ -143,10 +154,11 @@ export default class Geometry {
 		if(Array.isArray(this.rooms.room))
 		{
 			for(let i = 0; i < (this.rooms.room as Room[]).length; i++) {
-				roomGroup.add(this.makeRoom((this.rooms.room as Room[])[i]));
+				// A room must has only one subroom
+				roomGroup.add(this.makeSubroom((this.rooms.room as Room[])[i].subroom));
 			}
 		}else{
-			roomGroup.add(this.makeRoom(this.rooms.room as Room));
+			roomGroup.add(this.makeSubroom((this.rooms.room as Room).subroom));
 		}
 
 		return roomGroup;
@@ -218,21 +230,6 @@ export default class Geometry {
 		}
 	}
 
-	protected makeRoom (room: Room): three.Group{
-		const subroomGroup = new three.Group();
-
-		if(Array.isArray(room))
-		{
-			for(let i = 0; i < room.length; i++) {
-				subroomGroup.add(this.makeSubroom(room[i].subroom));
-			}
-		}else{
-			subroomGroup.add(this.makeSubroom(room.subroom));
-		}
-
-		return subroomGroup;
-	}
-
 	protected makeSubroom (subroom: Subroom): three.Mesh {
 		let subroomGeometry: three.BufferGeometry;
 
@@ -250,6 +247,7 @@ export default class Geometry {
 
 				for (let i = 0; i < (subroom.polygon as Polygon[]).length; i++) {
 					polygons.push(this.makePolygon(subroom.polygon[i]));
+
 				}
 
 				subroomGeometry = BufferGeometryUtils.mergeBufferGeometries(polygons);
@@ -290,7 +288,7 @@ export default class Geometry {
 			// angle = arctan(|y1-y2|/|x1-x2|) * PI/180
 			const angle = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
 
-			const wall: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.2);
+			const wall: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.1);
 			wall.rotateY(angle);
 			wall.translate((point1.x + point2.x)/2, 0.5, (point1.y + point2.y)/2);
 
@@ -298,6 +296,89 @@ export default class Geometry {
 		}
 	}
 
+	protected makeStair(subroom: Subroom): three.BoxBufferGeometry{
+		const polygon1: Polygon = (subroom.polygon as Polygon[])[0];
+		const polygon2: Polygon = (subroom.polygon as Polygon[])[1];
+
+		// Vertexs on polygon1
+		const point1: three.Vector2 = new three.Vector2(parseFloat(polygon1.vertex[0].px),
+			parseFloat(polygon1.vertex[0].py));
+		const point2: three.Vector2 = new three.Vector2(parseFloat(polygon1.vertex[1].px),
+			parseFloat(polygon1.vertex[1].py));
+
+		// Vertexs on polygon2
+		const point3: three.Vector2 = new three.Vector2(parseFloat(polygon2.vertex[0].px),
+			parseFloat(polygon2.vertex[0].py));
+		const point4: three.Vector2 = new three.Vector2(parseFloat(polygon2.vertex[1].px),
+			parseFloat(polygon2.vertex[1].py));
+
+		const center: three.Vector2 = new three.Vector2((point1.x + point2.x + point3.x + point4.x)/4,
+			(point1.y + point2.y + point3.y + point4.y)/4);
+
+		const width1: number = Math.sqrt(Math.pow(Math.abs(point1.x - point3.x),2)
+			+ Math.pow(Math.abs(point1.y - point3.y),2));
+		const width2: number = Math.sqrt(Math.pow(Math.abs(point1.x - point4.x),2)
+			+ Math.pow(Math.abs(point1.y - point4.y),2));
+
+		let width: number;
+		if(width1 <= width2){
+			width = width1;
+		}else {
+			width = width2;
+		}
+
+		// RotationY angle
+		let angleY = 0;
+		if((point1.x <= point2.x && point1.y <= point2.y) || (point1.x >= point2.x && point1.y >= point2.y)){
+			// Gradient of Polygon1 is positive
+			angleY = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
+		}else {
+			angleY = Math.PI/4 - Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
+		}
+
+		// RotationX angle
+		const Ax = parseFloat(subroom.A_x);
+		const By = parseFloat(subroom.B_y);
+		const Cz = parseFloat(subroom.C_z);
+
+		const upX: number = parseFloat(subroom.up.px);
+		const upY: number = parseFloat(subroom.up.py);
+		const downX: number = parseFloat(subroom.down.px);
+		const downY: number = parseFloat(subroom.down.py);
+
+		const elevationUp: number = upX * Ax + upY * By + Cz;
+		const elevationDown: number = downX * Ax + downY * By + Cz;
+		const heightDifference = Math.abs(elevationUp - elevationDown);
+
+		// Length of stair
+		// length = sqrt(pow(heightDifference,2) + pow(projection,2))
+
+		const projection: number = Math.sqrt(Math.pow(Math.abs(point1.x - point2.x),2)
+			+ Math.pow(Math.abs(point1.y - point2.y),2));
+		const length: number = Math.sqrt(Math.pow(projection,2)
+			+ Math.pow(heightDifference,2));
+
+		let angleZ: number;
+		if(upX > downX || upY > downY){
+			// Gradient of the stair is positive
+			angleZ = Math.atan2(heightDifference, projection);
+		}else if(upX < downX || upY < downY){
+			// Gradient of the stair is negative
+			angleZ = Math.PI - Math.atan2(heightDifference, projection);
+		}else{
+			console.error('Rendering stairs failed, the direction of stair isn\'t parallel to X axis or Y axis!')
+			return;
+		}
+
+		// Mesh
+		const stair: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,0.01,width);
+
+		stair.rotateY(angleY);
+		stair.rotateZ(angleZ);
+		stair.translate(center.x, (elevationUp + elevationDown)/2, center.y);
+
+		return stair;
+	}
 
 	protected makeGroundMesh(
 		{top, left, right, bottom}: {top: number; left: number; right: number; bottom: number},

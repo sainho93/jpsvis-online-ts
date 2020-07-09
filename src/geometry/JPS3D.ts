@@ -112,7 +112,6 @@ export default class JPS3D {
 		// Add geometry
 		this.geometry = new Geometry(init.geometryData);
 		this.scene.add(this.geometry.createRooms());
-		this.scene.add(this.geometry.createGround());
 		this.scene.add(this.geometry.createTransitions());
 
 		this.groundPlane = this.scene.getObjectByName('Land');
