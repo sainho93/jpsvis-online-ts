@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ \file corridor.xml
+  ~ \date 2020 - 7 - 9
+  ~ \author Tao Zhong
+  ~ \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
+  ~
+  ~ \section License
+  ~ This file is part of JuPedSim.
+  ~
+  ~ JuPedSim is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Lesser General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~  any later version.
+  ~
+  ~ JuPedSim is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ \section Description
+  -->
+
+<geometry version="0.8" caption="corner" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xsd.jupedsim.org/jps_geometry.xsd" unit="m">
+    <rooms>
+        <room id="0" caption="hall">
+            <subroom id="0" caption="hall" class="corridor" A_x="0" B_y="0" C_z="0">
+                <polygon caption="wall">
+                    <vertex px="10" py="0"/>
+                    <vertex px="0" py="0"/>
+                </polygon>
+                <polygon caption="wall">
+                    <vertex px="0" py="0"/>
+                    <vertex px="0" py="2"/>
+                </polygon>
+                <polygon caption="wall">
+                    <vertex px="0" py="2"/>
+                    <vertex px="10" py="2"/>
+                </polygon>
+            </subroom>
+        </room>
+    </rooms>
+    <transitions>
+        <transition id="0" caption="exit" type="emergency" room1_id="0" room2_id="-1">
+            <vertex px="10" py="0"/>
+            <vertex px="10" py="2"/>
+        </transition>
+    </transitions>
+    <undefine>
+        <Room id="-1" caption="Not assigned lines" class="container">
+            <subroom id="-1"/>
+        </Room>
+    </undefine>
+</geometry>
