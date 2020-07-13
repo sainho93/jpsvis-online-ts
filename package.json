@@ -33,7 +33,7 @@
     "react-router-dom": "^5.2.0",
     "source-map-loader": "^1.0.0",
     "standard": "^14.3.4",
-    "standardx": "^5.0.0",
+    "standard-readme": "^2.0.2",
     "stats.js": "^0.17.0",
     "style-loader": "^1.2.1",
     "three": "^0.117.1",

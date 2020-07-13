@@ -1,12 +1,8 @@
 {
-    // An environment defines global variables that are predefined.
     "env": {
-        // Browser global variables.
         "browser": true,
-        // Adds all ECMAScript 2020 globals and automatically sets the ecmaVersion parser option to 11.
         "es2020": true
     },
-    // Extend the set of enabled rules from base configurations.
     "extends": [
         "eslint:recommended", // A subset of core rules from major versions of ESLint that report common problems
         "plugin:react/recommended", // A subset of rules from eslint-plugin-react
