@@ -38,10 +38,10 @@ const { Dragger } = Upload
 
 const steps = [
   {
-    title: 'Upload Geometry XML'
+    title: 'Upload Geometry XML file'
   },
   {
-    title: 'Upload Trajectory XML'
+    title: 'Upload Trajectory TXT file'
   }
 ]
 
@@ -135,7 +135,7 @@ class UploadPage extends React.Component {
               ))}
             </Steps>
             <div className="steps-content" onChange={this.onChangeHandler}>
-              <Dragger {...dragger} accept='.xml' customRequest={this.uploadToLocal}>
+              <Dragger {...dragger} accept='.xml, .txt' customRequest={this.uploadToLocal}>
                 <p className="ant-upload-drag-icon">
                   <InboxOutlined />
                 </p>

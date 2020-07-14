@@ -33,7 +33,6 @@ import functools
 import xmltodict
 from aiohttp_debugtoolbar import toolbar_middleware_factory
 
-
 # Base directory
 PROJ_ROOT = pathlib.Path(__file__).parent.parent.parent
 NO_CACHE_HEADER = {'cache-control': 'no-cache'}
@@ -80,29 +79,32 @@ async def post_file(request):
                     break
                 size += len(chunk)
                 f.write(chunk)
-                f.close()
 
-                # Identify the file format
-                # Rename according to the file format
+            f.close()
+
+            # Identify the file format
+            # Rename according to the file format
+            if filename.endswith('.xml'):
                 tree = ET.parse(filename)
                 root = tree.getroot()
                 if root.tag == 'geometry':
                     os.rename(filename, 'geometry.xml')
                     text = {'res': '200'}
 
-                elif root.tag == 'JuPedSim':
-                    os.rename(filename, 'trajectory.xml')
-                    text = {'res': '200'}
-
                 else:
                     os.remove(filename)
                     text = {'res': '500'}
+            elif filename.endswith('.txt'):
+                os.rename(filename, 'trajectory.txt')
+                text = {'res': '200'}
+            else:
+                text = {'res': '500'}
 
-                return web.Response(text=json.dumps(text, ensure_ascii=False)) # Response to Dragger component
+            return web.Response(text=json.dumps(text, ensure_ascii=False))  # Response to Dragger component
 
     except Exception as e:
         print(e)
-        return web.Response(text="500") # Response to Dragger component
+        return web.Response(text="500")  # Response to Dragger component
 
 
 def setup_server():
@@ -117,13 +119,12 @@ def setup_server():
             allow_credentials=True,
             expose_headers="*",
             allow_headers="*",
-            # allow_methods="*",
+            allow_methods="*",
+            max_age=3600,
         )
     })
     resource = cors.add(app.router.add_resource("/upload/"))
-    cors.add(resource.add_route("POST", post_file)) # Add handler for POST request on ./upload
-
-
+    cors.add(resource.add_route("POST", post_file))  # Add handler for POST request on ./upload
 
     # Routers
     app.router.add_get("/", index)
@@ -158,4 +159,3 @@ if __name__ == '__main__':
         loop.run_forever()
     except KeyboardInterrupt:
         pass
-

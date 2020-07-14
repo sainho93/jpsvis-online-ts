@@ -24,7 +24,6 @@ This project is hosted on [Github](https://github.com/sainho93/jpsvis-online-ts.
 
 As the program is still under development and is extended continuously, we advice you to use the latest sources from
  our GitHub repository. Using a command line client the following command should work:
- 
     git clone --recursive https://github.com/sainho93/jpsvis-online-ts/
 
 ### Set-up
@@ -44,7 +43,7 @@ Then install both Python and JS dependencies:
 Now the JPSvis Online is ready to use
 
 ## Usage
-To open the JPSvis Online in a web browser, Build the client-side JavaScript bundle at first:
+To open the JPSvis Online in a web browser, build the client-side JavaScript bundle at first:
 
     yarn webpack
     
@@ -52,13 +51,18 @@ Then run the server:
 
     python ./src/server/server.py
     
-Visit http://localhost:8080/ to run
+Visit http://localhost:8080/ to use JPSvis Online
 
 ## Maintainers
 
 - [sainho93](https://github.com/sainho93)
 
+## Acknowledgements
+JPSvis Online is inspired by [SUMO-Web3D](https://github.com/sainho93/sumo-web3d).
+
 ## Contributing
+
+See [the contributing file](CONTRIBUTING.md)!
 
 Feel free to dive in! [Open an issue](https://github.com/sainho93/jpsvis-online-ts/issues/new) or submit PRs.
 
