@@ -31,6 +31,7 @@ import {InitResources} from './initialization';
 import Postprocessing from './effects/postprocessing';
 import Geometry from './geometry';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -60,25 +61,29 @@ export default class JPS3D {
 	private controls: OrbitControls;
 	private geometry: Geometry;
 	private subroom: three.Object3D;
+	private width: number;
+	private height: number
+	private loader: GLTFLoader
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
 
 		this.parentElement = parentElement;
-		const width = parentElement.clientWidth;
-		const height = parentElement.clientHeight;
-
+		this.width = window.innerWidth
+		this.height = window.innerHeight
 		// three.js
 		this.renderer = new three.WebGLRenderer();
 		(this.renderer as any).setPixelRatio(window.devicePixelRatio);
+
 		// disable the ability to right click in order to allow rotating with the right button
 		this.renderer.domElement.oncontextmenu = (e: PointerEvent) => false;
 		this.renderer.domElement.tabIndex = 1;
-		this.renderer.setSize(width, height);
+		this.renderer.setSize(this.width, this.height);
 
 		this.scene = new three.Scene();
 
-		this.camera = new three.PerspectiveCamera(75, width / height, 0.1, 1000);
+		this.camera = new three.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
+
 		parentElement.appendChild(this.renderer.domElement);
 
 		// axis
@@ -129,8 +134,8 @@ export default class JPS3D {
 			this.scene,
 			this.renderer,
 			this.gui,
-			width,
-			height,
+			this.width,
+			this.height,
 		);
 
 		// stats.js
@@ -141,6 +146,8 @@ export default class JPS3D {
 
 		this.animate = this.animate.bind(this);
 		this.animate();
+
+		window.addEventListener('resize', this.onResize.bind(this));
 
 		const endMs = window.performance.now();
 
@@ -153,4 +160,21 @@ export default class JPS3D {
 
 		requestAnimationFrame(this.animate);
 	}
+
+	onResize() {
+		const width = this.parentElement.clientWidth;
+		const height = this.parentElement.clientHeight;
+
+		// resize WebGL canvas in response to window resizes
+		this.renderer.setSize(width, height);
+
+		this.postprocessing.onResize(width, height);
+
+		// also readjust camera so images aren't stretched or squished
+		this.camera.aspect = width / height;
+		this.camera.updateProjectionMatrix();
+	}
+
 }
+
+

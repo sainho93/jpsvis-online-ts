@@ -37,6 +37,7 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 interface GeoFile {
 	geometry: Geometry; // geometry property means 'geometry' Tag
+
 }
 
 interface Rooms {
@@ -60,6 +61,7 @@ interface Subroom {
 	C_z: string
 	up: Up;
 	down: Down;
+
 }
 
 interface Up{
@@ -417,6 +419,8 @@ export default class Geometry {
 
 		return stair;
 	}
+
+
 }
 
 

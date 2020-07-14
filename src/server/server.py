@@ -122,7 +122,6 @@ async def post_file(request):
                 size += len(chunk)
                 f.write(chunk)
 
-
             # Identify the file format
             # Rename according to the file format
             if filename.endswith('.xml'):
