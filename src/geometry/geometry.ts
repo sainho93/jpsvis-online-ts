@@ -131,12 +131,17 @@ export default class Geometry {
 	}
 
 	createGround(subroom: Subroom): three.BoxBufferGeometry{
-		let maxX = 0;
-		let minX = 0;
-		let maxY = 0;
-		let minY = 0;
+		let maxX: number;
+		let minX: number;
+		let maxY: number;
+		let minY: number;
 
 		if(Array.isArray(subroom.polygon)){
+			maxX = parseFloat(subroom.polygon[0].vertex[0].px);
+			minX = parseFloat(subroom.polygon[0].vertex[0].px);
+			minY = parseFloat(subroom.polygon[0].vertex[0].py);
+			maxY = parseFloat(subroom.polygon[0].vertex[0].py);
+
 			for(let i = 0; i < (subroom.polygon as Polygon[]).length; i++){
 				const point1 = subroom.polygon[i].vertex[0];
 				const point2 = subroom.polygon[i].vertex[1];
@@ -164,6 +169,9 @@ export default class Geometry {
 					minY = parseFloat(point2.py);
 				}
 			}
+		}else {
+			const ground = new three.BoxBufferGeometry(0, 0, 0);
+			return ground;
 		}
 
 		const length = Math.abs(maxX - minX);
