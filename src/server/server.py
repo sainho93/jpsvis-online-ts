@@ -29,16 +29,14 @@ import logging
 import pathlib
 import aiohttp_debugtoolbar
 from xml.etree import ElementTree as ET
-import functools
 import xmltodict
-from aiohttp_debugtoolbar import toolbar_middleware_factory
 
 # Base directory
 PROJ_ROOT = pathlib.Path(__file__).parent.parent.parent
 NO_CACHE_HEADER = {'cache-control': 'no-cache'}
 
 
-def parse_xml_file(filepath):
+def parse_geometry_file(filepath):
     if filepath:
         with open(filepath, encoding='utf-8') as f:
             return xmltodict.parse(f.read(), attr_prefix='')
@@ -46,14 +44,58 @@ def parse_xml_file(filepath):
         return None
 
 
+def parse_trajectory_file(filepath):
+    trajectory = {'pedestrians': {}}
+    if filepath:
+        with open(filepath, 'r') as f:
+            for line in f.readlines():
+                line = line.strip('\n')
+                if line.startswith('#framerate:'):
+                    framerate = float(line.split()[1])
+                    trajectory['framerate'] = framerate
+                else:
+                    if line.startswith('#') is False and line != '':
+                        line = line.split('\t')
+                        ID = line[0]
+                        if ID in trajectory['pedestrians']:
+                            trajectory['pedestrians'][ID].append(parse_pedestrian(line))
+                        else:
+                            trajectory['pedestrians'][ID] = [parse_pedestrian(line)]
+
+        return trajectory
+
+    else:
+        return None
+
+
+def parse_pedestrian(dataline):
+
+    x = float(dataline[2])
+    y = float(dataline[3])
+    z = float(dataline[4])
+    a = float(dataline[5])
+    b = float(dataline[6])
+    angle = float(dataline[7])
+    color = float(dataline[8])
+
+    location = {
+        'coordinates': {'x': x, 'y': y, 'z': z},
+        'axes': {'A': a, 'B': b},
+        'angle': angle,
+        'color': color,
+    }
+
+    return location
+
+
 async def get_geometry(request):
     geo_file = 'geometry.xml'
-    return web.Response(text=json.dumps(parse_xml_file(geo_file), ensure_ascii=False))
+    return web.Response(text=json.dumps(parse_geometry_file(geo_file), ensure_ascii=False))
 
 
 async def get_trajectory(request):
-    tra_file = 'trajectory.xml'
-    return web.Response(text=json.dumps(parse_xml_file(tra_file), ensure_ascii=False))
+    tra_file = 'trajectory.txt'
+    return web.Response(text=json.dumps(parse_trajectory_file(tra_file), ensure_ascii=False))
 
 
 async def index(request):
@@ -80,7 +122,6 @@ async def post_file(request):
                 size += len(chunk)
                 f.write(chunk)
 
-            f.close()
 
             # Identify the file format
             # Rename according to the file format
@@ -96,6 +137,7 @@ async def post_file(request):
                     text = {'res': '500'}
             elif filename.endswith('.txt'):
                 os.rename(filename, 'trajectory.txt')
+
                 text = {'res': '200'}
             else:
                 text = {'res': '500'}
