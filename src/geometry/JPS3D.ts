@@ -63,7 +63,9 @@ export default class JPS3D {
 	private subroom: three.Object3D;
 	private width: number;
 	private height: number
-	private loader: GLTFLoader
+	private loader: GLTFLoader;
+	private mixers: three.AnimationMixer[];
+	private clock: three.Clock;
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
@@ -98,16 +100,18 @@ export default class JPS3D {
 		this.controls.maxDistance = 5000;
 
 		// light
-		// Set ambient light
+		// AmbientLight: light globally illuminates all objects in the scene equally.
 		const ambient = new three.AmbientLight(AMBIENT_LIGHT_COLOR);
 		this.scene.add(ambient);
 
-		// White directional light at half intensity shining from the top o simulate daylight.
-		// This light can cast shadows
+		// HemisphereLight: positioned directly above the scene, with color fading from the sky color to the ground color.
+		const hemisphereLight = new three.HemisphereLight(0xffffbb, 0x080820, 0.5);
+		this.scene.add(hemisphereLight);
+
+		// DirectionalLight: white directional light at half intensity shining from the top o simulate daylight.
 		const directionalLight = new three.DirectionalLight(0xffffff, 0.5);
 		directionalLight.castShadow = true;            // default false
 
-		//Set up shadow properties for the light
 		directionalLight.shadow.mapSize.width = 512;  // default
 		directionalLight.shadow.mapSize.height = 512; // default
 		directionalLight.shadow.camera.near = 0.5;    // default
@@ -144,6 +148,8 @@ export default class JPS3D {
 		parentElement.appendChild(this.stats.dom);
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
 
+		// animate() is a callback func for requestAnimationFrame()
+		// its 'this' should be set to the JPS3D instance
 		this.animate = this.animate.bind(this);
 		this.animate();
 
@@ -174,7 +180,6 @@ export default class JPS3D {
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
 	}
-
 }
 
 
