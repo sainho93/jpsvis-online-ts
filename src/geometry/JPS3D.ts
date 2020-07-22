@@ -64,8 +64,10 @@ export default class JPS3D {
 	private width: number;
 	private height: number
 	private loader: GLTFLoader;
-	private mixers: three.AnimationMixer[];
+	private mixer: three.AnimationMixer;
 	private clock: three.Clock;
+	private content: three.Object3D;
+	private clip: three.AnimationClip;
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
@@ -83,10 +85,13 @@ export default class JPS3D {
 		this.renderer.setSize(this.width, this.height);
 
 		this.scene = new three.Scene();
-
 		this.camera = new three.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
 
 		parentElement.appendChild(this.renderer.domElement);
+
+		// clock
+		this.clock = new three.Clock();
+		// this.clock.getDelta = this.clock.getDelta.bind(this.clock);
 
 		// axis
 		const axesHelper = new three.AxesHelper(1000);
@@ -124,6 +129,28 @@ export default class JPS3D {
 		this.scene.add(this.geometry.createRooms());
 		this.scene.add(this.geometry.createTransitions());
 
+		// Add pedestrians
+		this.loader = new GLTFLoader();
+		const scene = this.scene;
+		let mixer = this.mixer;
+
+		this.loader.load(
+			'/pedestrian/man_001.gltf',
+			 (gltf) => {
+				this.setContent(gltf.scene, gltf.animations[0]);
+		},
+			// called while loading is progressing
+			function ( xhr ) {
+
+				console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+			},
+			function ( error ) {
+
+				console.error( error );
+		});
+
+
 		// Add dat gui
 		this.gui = new dat.gui.GUI();
 		//TODO: Add option to control whether present geometry (rooms, transitions)
@@ -160,11 +187,50 @@ export default class JPS3D {
 		console.log('Initialized three.js scene in', endMs - startMs, 'ms');
 	}
 
+	setContent(object: three.Object3D, clip: three.AnimationClip){
+		this.scene.add(object);
+
+		this.content = object;
+
+		this.content.traverse((node) => {
+			if (node.isLight) {
+				this.state.addLights = false;
+			} else if (node.isMesh) {
+				node.material.depthWrite = !node.material.transparent;
+			}
+		});
+
+		this.setClip(clip);
+
+		this.updateGUI();
+
+	}
+
+	updateGUI (){
+		this.mixer = new three.AnimationMixer( this.content );
+		const action = this.mixer.clipAction(this.clip);
+		action.play();
+	}
+
+	setClip ( clip: three.AnimationClip ) {
+		if (this.mixer) {
+			this.mixer.stopAllAction();
+			this.mixer.uncacheRoot(this.mixer.getRoot());
+			this.mixer = null;
+		}
+
+		this.clip = clip;
+	}
+
 	animate () {
+		requestAnimationFrame(this.animate);
+
 		this.postprocessing.render();
 		this.stats.update();
+		this.controls.update();
 
-		requestAnimationFrame(this.animate);
+		const dt = this.clock.getDelta();
+		this.mixer && this.mixer.update(dt);
 	}
 
 	onResize() {
