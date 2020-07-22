@@ -22,10 +22,12 @@
  */
 
 import {GeoFile} from './geometry'
+import {TraFile} from './trajectory'
 
 export interface InitResources {
 	geometryData: GeoFile;
 	geometryRootEl: HTMLElement;
+	trajectoryData: TraFile
 }
 
 function getOrThrow(id: string): HTMLElement {
@@ -53,13 +55,15 @@ async function fetchJson<T>(url: string): Promise<T> {
 
 export default async function init (): Promise<InitResources> {
 	const loadStartMs = window.performance.now();
-	const data = await fetchJson<GeoFile>('geometry');
+	const geoData = await fetchJson<GeoFile>('geometry');
+	const traData = await fetchJson<TraFile>('trajectory')
 	const loadEndMs = window.performance.now();
 
 	console.log('Loaded static resources in', loadEndMs - loadStartMs, 'ms');
 
 	return{
-		geometryData: data,
-		geometryRootEl: getOrThrow('canvas')
+		geometryData: geoData,
+		geometryRootEl: getOrThrow('canvas'),
+		trajectoryData: traData
 	}
 }

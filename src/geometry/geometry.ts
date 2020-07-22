@@ -35,9 +35,8 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
  **/
 
 
-interface GeoFile {
+export interface GeoFile {
 	geometry: Geometry; // geometry property means 'geometry' Tag
-
 }
 
 interface Rooms {

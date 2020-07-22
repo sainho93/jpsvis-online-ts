@@ -64,7 +64,7 @@ export default class JPS3D {
 	private width: number;
 	private height: number
 	private loader: GLTFLoader;
-	private mixer: three.AnimationMixer;
+	private mixers: three.AnimationMixer[];
 	private clock: three.Clock;
 	private content: three.Object3D;
 	private clip: three.AnimationClip;
@@ -75,6 +75,7 @@ export default class JPS3D {
 		this.parentElement = parentElement;
 		this.width = window.innerWidth
 		this.height = window.innerHeight
+
 		// three.js
 		this.renderer = new three.WebGLRenderer();
 		(this.renderer as any).setPixelRatio(window.devicePixelRatio);
@@ -131,25 +132,28 @@ export default class JPS3D {
 
 		// Add pedestrians
 		this.loader = new GLTFLoader();
-		const scene = this.scene;
-		let mixer = this.mixer;
+		this.mixers = [];
 
-		this.loader.load(
-			'/pedestrian/man_001.gltf',
-			 (gltf) => {
-				this.setContent(gltf.scene, gltf.animations[0]);
-		},
-			// called while loading is progressing
-			function ( xhr ) {
+		for(let i = 0; i<Object.keys(init.trajectoryData.pedestrians).length; i++){
+			this.loader.load(
+				'/pedestrian/man_001.gltf',
+				(gltf) => {
+					gltf.scene.name = (i+1).toString();
+					this.setContent(gltf.scene, gltf.animations[0]);
+				},
+				// called while loading is progressing
+				function ( xhr ) {
 
-				console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+					console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
-			},
-			function ( error ) {
+				},
+				function ( error ) {
 
-				console.error( error );
-		});
+					console.error( error );
+				});
+		}
 
+		console.log(this.scene)
 
 		// Add dat gui
 		this.gui = new dat.gui.GUI();
@@ -188,6 +192,7 @@ export default class JPS3D {
 	}
 
 	setContent(object: three.Object3D, clip: three.AnimationClip){
+		object.translateY(parseFloat(object.name));
 		this.scene.add(object);
 
 		this.content = object;
@@ -200,26 +205,21 @@ export default class JPS3D {
 			}
 		});
 
-		this.setClip(clip);
+		this.clip = clip;
 
 		this.updateGUI();
 
 	}
 
 	updateGUI (){
-		this.mixer = new three.AnimationMixer( this.content );
-		const action = this.mixer.clipAction(this.clip);
+		const mixer = new three.AnimationMixer( this.content );
+		this.mixers.push(mixer);
+		const action = mixer.clipAction(this.clip);
 		action.play();
 	}
 
-	setClip ( clip: three.AnimationClip ) {
-		if (this.mixer) {
-			this.mixer.stopAllAction();
-			this.mixer.uncacheRoot(this.mixer.getRoot());
-			this.mixer = null;
-		}
+	updatePedestrians(){
 
-		this.clip = clip;
 	}
 
 	animate () {
@@ -230,7 +230,9 @@ export default class JPS3D {
 		this.controls.update();
 
 		const dt = this.clock.getDelta();
-		this.mixer && this.mixer.update(dt);
+		this.mixers.forEach(mixer => mixer.update(dt));
+
+		this.updatePedestrians();
 	}
 
 	onResize() {
