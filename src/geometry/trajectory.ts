@@ -23,6 +23,28 @@
  */
 
 export interface TraFile {
-	pedestrians: any;
+	pedestrians: pedestrian[];
 	framerate: number;
+}
+
+export interface pedestrian {
+	frames: frame[];
+}
+
+interface frame {
+	coordinate: xyz,
+	axes: ab,
+	angle: number,
+	color: number
+}
+
+interface xyz {
+	x: number,
+	y: number,
+	z: number
+}
+
+interface ab {
+	A: number,
+	B: number
 }

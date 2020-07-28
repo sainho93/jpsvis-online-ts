@@ -30,6 +30,7 @@ import * as Stats from 'stats.js'
 import {InitResources} from './initialization';
 import Postprocessing from './effects/postprocessing';
 import Geometry from './geometry';
+import TraFile from './trajectory';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
@@ -55,12 +56,10 @@ export default class JPS3D {
 	private camera: three.PerspectiveCamera;
 	private scene: three.Scene;
 	private gui: typeof dat.gui.GUI;
-	private groundPlane: three.Object3D;
 	private stats: Stats;
 	private postprocessing: Postprocessing;
 	private controls: OrbitControls;
 	private geometry: Geometry;
-	private subroom: three.Object3D;
 	private width: number;
 	private height: number
 	private loader: GLTFLoader;
@@ -68,6 +67,9 @@ export default class JPS3D {
 	private clock: three.Clock;
 	private content: three.Object3D;
 	private clip: three.AnimationClip;
+	private pedestrans: three.Object3D[];
+	private init: InitResources;
+	private frame: number;
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
@@ -75,6 +77,8 @@ export default class JPS3D {
 		this.parentElement = parentElement;
 		this.width = window.innerWidth
 		this.height = window.innerHeight
+
+		this.init = init;
 
 		// three.js
 		this.renderer = new three.WebGLRenderer();
@@ -126,19 +130,22 @@ export default class JPS3D {
 		this.scene.add(directionalLight);
 
 		// Add geometry
-		this.geometry = new Geometry(init.geometryData);
+		this.geometry = new Geometry(this.init.geometryData);
 		this.scene.add(this.geometry.createRooms());
 		this.scene.add(this.geometry.createTransitions());
 
 		// Add pedestrians
 		this.loader = new GLTFLoader();
 		this.mixers = [];
+		this.pedestrans = [];
+		this.frame = 0;
 
-		for(let i = 0; i<Object.keys(init.trajectoryData.pedestrians).length; i++){
+		for(let i = 0; i<this.init.trajectoryData.pedestrians.length; i++){
 			this.loader.load(
 				'/pedestrian/man_001.gltf',
 				(gltf) => {
 					gltf.scene.name = (i+1).toString();
+					this.pedestrans.push(gltf.scene);
 					this.setContent(gltf.scene, gltf.animations[0]);
 				},
 				// called while loading is progressing
@@ -152,8 +159,6 @@ export default class JPS3D {
 					console.error( error );
 				});
 		}
-
-		console.log(this.scene)
 
 		// Add dat gui
 		this.gui = new dat.gui.GUI();
@@ -179,6 +184,8 @@ export default class JPS3D {
 		parentElement.appendChild(this.stats.dom);
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
 
+		console.log(this.pedestrans);
+
 		// animate() is a callback func for requestAnimationFrame()
 		// its 'this' should be set to the JPS3D instance
 		this.animate = this.animate.bind(this);
@@ -189,10 +196,10 @@ export default class JPS3D {
 		const endMs = window.performance.now();
 
 		console.log('Initialized three.js scene in', endMs - startMs, 'ms');
+
 	}
 
 	setContent(object: three.Object3D, clip: three.AnimationClip){
-		object.translateY(parseFloat(object.name));
 		this.scene.add(object);
 
 		this.content = object;
@@ -218,8 +225,22 @@ export default class JPS3D {
 		action.play();
 	}
 
-	updatePedestrians(){
+	updatePedestrians(pedestriansLocation: TraFile.pedestrians, frame: number){
 
+		// for(let i = 0; i<this.pedestrans.length; i++){
+		// 	const pedestrian = this.pedestrans[i]
+		// 	const name = parseFloat(pedestrian.name);
+		//
+		// 	if (frame < pedestriansLocation[name].length){
+		// 		const location = pedestriansLocation[name][frame];
+		//
+		// 		this.pedestrans[i].translateX(location.coordinate.x);
+		// 		this.pedestrans[i].translateZ(location.coordinate.y);
+		// 		this.pedestrans[i].translateY(location.coordinate.z);
+		// 	}
+		//
+		//
+		// }
 	}
 
 	animate () {
@@ -232,7 +253,11 @@ export default class JPS3D {
 		const dt = this.clock.getDelta();
 		this.mixers.forEach(mixer => mixer.update(dt));
 
-		this.updatePedestrians();
+
+		// this.updatePedestrians(this.init.trajectoryData.pedestrians, this.frame);
+		// this.frame = this.frame + 1;
+
+
 	}
 
 	onResize() {

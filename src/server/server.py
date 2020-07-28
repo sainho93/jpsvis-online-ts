@@ -45,7 +45,7 @@ def parse_geometry_file(filepath):
 
 
 def parse_trajectory_file(filepath):
-    trajectory = {'pedestrians': {}}
+    trajectory = {'pedestrians': []}
     if filepath:
         with open(filepath, 'r') as f:
             for line in f.readlines():
@@ -56,11 +56,11 @@ def parse_trajectory_file(filepath):
                 else:
                     if line.startswith('#') is False and line != '':
                         line = line.split('\t')
-                        ID = line[0]
-                        if ID in trajectory['pedestrians']:
-                            trajectory['pedestrians'][ID].append(parse_pedestrian(line))
+                        id = int(line[0])
+                        if id < len(trajectory['pedestrians'])+1:
+                            trajectory['pedestrians'][id-1].append(parse_pedestrian(line))
                         else:
-                            trajectory['pedestrians'][ID] = [parse_pedestrian(line)]
+                            trajectory['pedestrians'].append([parse_pedestrian(line)])
 
         return trajectory
 
@@ -79,7 +79,7 @@ def parse_pedestrian(dataline):
     color = float(dataline[8])
 
     location = {
-        'coordinates': {'x': x, 'y': y, 'z': z},
+        'coordinate': {'x': x, 'y': y, 'z': z},
         'axes': {'A': a, 'B': b},
         'angle': angle,
         'color': color,
@@ -125,7 +125,7 @@ async def post_file(request):
             # Identify the file format
             # Rename according to the file format
             if filename.endswith('.xml'):
-                tree = ET.parse(filename)
+                tree = ET.parse(filename)  # FixMe: can't load file for geometry.xml
                 root = tree.getroot()
                 if root.tag == 'geometry':
                     os.rename(filename, 'geometry.xml')
