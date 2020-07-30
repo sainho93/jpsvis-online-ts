@@ -27,11 +27,11 @@ import * as _ from 'lodash';
 import * as three from 'three';
 import addSky from './effects/sky';
 import * as Stats from 'stats.js'
-import {InitResources} from './initialization';
+import { InitResources } from './initialization';
 import Postprocessing from './effects/postprocessing';
 import Geometry from './geometry';
-import TraFile from './trajectory';
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
+import { TraFile } from './trajectory';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -65,11 +65,12 @@ export default class JPS3D {
 	private loader: GLTFLoader;
 	private mixers: three.AnimationMixer[];
 	private clock: three.Clock;
-	private content: three.Object3D;
-	private clip: three.AnimationClip;
-	private pedestrans: three.Object3D[];
+	private pedestrians: three.Object3D[]; // this.pedestrians contains all imported models of pedestrian, not the trajectory data
 	private init: InitResources;
 	private frame: number;
+	private state: {};
+	private skeletonHelpers: three.SkeletonHelper[];
+
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
@@ -137,7 +138,7 @@ export default class JPS3D {
 		// Add pedestrians
 		this.loader = new GLTFLoader();
 		this.mixers = [];
-		this.pedestrans = [];
+		this.pedestrians = [];
 		this.frame = 0;
 
 		for(let i = 0; i<this.init.trajectoryData.pedestrians.length; i++){
@@ -145,8 +146,10 @@ export default class JPS3D {
 				'/pedestrian/man_001.gltf',
 				(gltf) => {
 					gltf.scene.name = (i+1).toString();
-					this.pedestrans.push(gltf.scene);
-					this.setContent(gltf.scene, gltf.animations[0]);
+					gltf.scene.translateY(i+1);
+					this.scene.add(gltf.scene);
+					this.pedestrians.push(gltf.scene);
+					this.setMixer(gltf.scene, gltf.animations[0]);
 				},
 				// called while loading is progressing
 				function ( xhr ) {
@@ -161,8 +164,23 @@ export default class JPS3D {
 		}
 
 		// Add dat gui
+		this.skeletonHelpers = [];
+		this.state = {
+			pedestrians: true,
+			wireframe: false,
+			skeleton: false,
+			addLights: true,
+		};
+
 		this.gui = new dat.gui.GUI();
-		//TODO: Add option to control whether present geometry (rooms, transitions)
+		const dispFolder = this.gui.addFolder( 'Display' );
+
+		const pedCtrl = dispFolder.add(this.state,'pedestrians')
+		pedCtrl.onChange(() => this.updatePedDisplay());
+		const wireframeCtrl = dispFolder.add(this.state, 'wireframe');
+		wireframeCtrl.onChange(() => this.updatePedDisplay());
+		const skeletonCtrl = dispFolder.add(this.state, 'skeleton');
+		skeletonCtrl.onChange(() => this.updatePedDisplay());
 
 		// Add sky
 		addSky(this.scene);
@@ -184,8 +202,6 @@ export default class JPS3D {
 		parentElement.appendChild(this.stats.dom);
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
 
-		console.log(this.pedestrans);
-
 		// animate() is a callback func for requestAnimationFrame()
 		// its 'this' should be set to the JPS3D instance
 		this.animate = this.animate.bind(this);
@@ -199,12 +215,9 @@ export default class JPS3D {
 
 	}
 
-	setContent(object: three.Object3D, clip: three.AnimationClip){
-		this.scene.add(object);
+	setMixer(object: three.Object3D, clip: three.AnimationClip){
 
-		this.content = object;
-
-		this.content.traverse((node) => {
+		object.traverse((node) => {
 			if (node.isLight) {
 				this.state.addLights = false;
 			} else if (node.isMesh) {
@@ -212,52 +225,63 @@ export default class JPS3D {
 			}
 		});
 
-		this.clip = clip;
-
-		this.updateGUI();
-
-	}
-
-	updateGUI (){
-		const mixer = new three.AnimationMixer( this.content );
+		const mixer = new three.AnimationMixer( object );
 		this.mixers.push(mixer);
-		const action = mixer.clipAction(this.clip);
+		const action = mixer.clipAction(clip);
 		action.play();
 	}
 
-	updatePedestrians(pedestriansLocation: TraFile.pedestrians, frame: number){
+	updatePedDisplay () {
+		if (this.skeletonHelpers.length) {
+			this.skeletonHelpers.forEach((helper) => this.scene.remove(helper));
+		}
 
-		// for(let i = 0; i<this.pedestrans.length; i++){
-		// 	const pedestrian = this.pedestrans[i]
+		for(let i=0; i<this.pedestrians.length; i++){
+
+			this.traverseMaterials(this.pedestrians[i], (material) => {
+				material.wireframe = this.state.wireframe;
+			});
+
+			this.pedestrians[i].traverse((node) => {
+				if (node.isMesh && node.skeleton && this.state.skeleton) {
+					const helper = new three.SkeletonHelper(node.skeleton.bones[0].parent);
+					helper.material.linewidth = 3;
+					this.scene.add(helper);
+					this.skeletonHelpers.push(helper);
+				}
+			});
+
+			this.pedestrians[i].visible = this.state.pedestrians;
+		}
+
+	}
+
+	traverseMaterials (object: three.Object3D, callback) {
+		object.traverse((node) => {
+			if (!node.isMesh) return;
+			const materials = Array.isArray(node.material)
+				? node.material
+				: [node.material];
+			materials.forEach(callback);
+		});
+	}
+
+	updatePedLocation(pedestriansLocation: TraFile['pedestrians'], frame: number){
+
+		// for(let i = 0; i<this.pe.length; i++){
+		// 	const pedestrian = this.pedestrians[i]
 		// 	const name = parseFloat(pedestrian.name);
 		//
 		// 	if (frame < pedestriansLocation[name].length){
 		// 		const location = pedestriansLocation[name][frame];
 		//
-		// 		this.pedestrans[i].translateX(location.coordinate.x);
-		// 		this.pedestrans[i].translateZ(location.coordinate.y);
-		// 		this.pedestrans[i].translateY(location.coordinate.z);
+		// 		this.pedestrians[i].translateX(location.coordinate.x);
+		// 		this.pedestrians[i].translateZ(location.coordinate.y);
+		// 		this.pedestrians[i].translateY(location.coordinate.z);
 		// 	}
 		//
 		//
 		// }
-	}
-
-	animate () {
-		requestAnimationFrame(this.animate);
-
-		this.postprocessing.render();
-		this.stats.update();
-		this.controls.update();
-
-		const dt = this.clock.getDelta();
-		this.mixers.forEach(mixer => mixer.update(dt));
-
-
-		// this.updatePedestrians(this.init.trajectoryData.pedestrians, this.frame);
-		// this.frame = this.frame + 1;
-
-
 	}
 
 	onResize() {
@@ -273,6 +297,20 @@ export default class JPS3D {
 		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix();
 	}
+
+	animate () {
+		requestAnimationFrame(this.animate);
+
+		this.postprocessing.render();
+		this.stats.update();
+		this.controls.update();
+
+		const dt = this.clock.getDelta();
+		this.mixers.forEach(mixer => mixer.update(dt));
+
+	}
+
+
 }
 
 
