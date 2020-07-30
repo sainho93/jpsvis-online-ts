@@ -23,11 +23,11 @@
  */
 
 export interface TraFile {
-	pedestrians: pedestrian[];
+	pedestrians: [frame[]];
 	framerate: number;
 }
 
-export interface pedestrian {
+interface pedestrian {
 	frames: frame[];
 }
 

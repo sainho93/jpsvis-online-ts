@@ -66,11 +66,11 @@ export default class JPS3D {
 	private mixers: three.AnimationMixer[];
 	private clock: three.Clock;
 	private pedestrians: three.Object3D[]; // this.pedestrians contains all imported models of pedestrian, not the trajectory data
+	private trajectory: TraFile;
 	private init: InitResources;
 	private frame: number;
 	private state: {};
 	private skeletonHelpers: three.SkeletonHelper[];
-
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
@@ -80,6 +80,7 @@ export default class JPS3D {
 		this.height = window.innerHeight
 
 		this.init = init;
+		this.trajectory = init.trajectoryData;
 
 		// three.js
 		this.renderer = new three.WebGLRenderer();
@@ -141,12 +142,11 @@ export default class JPS3D {
 		this.pedestrians = [];
 		this.frame = 0;
 
-		for(let i = 0; i<this.init.trajectoryData.pedestrians.length; i++){
+		for(let i = 0; i<this.trajectory.pedestrians.length; i++){
 			this.loader.load(
 				'/pedestrian/man_001.gltf',
 				(gltf) => {
 					gltf.scene.name = (i+1).toString();
-					gltf.scene.translateY(i+1);
 					this.scene.add(gltf.scene);
 					this.pedestrians.push(gltf.scene);
 					this.setMixer(gltf.scene, gltf.animations[0]);
@@ -163,6 +163,8 @@ export default class JPS3D {
 				});
 		}
 
+		this.resetPedLocation();
+
 		// Add dat gui
 		this.skeletonHelpers = [];
 		this.state = {
@@ -170,6 +172,7 @@ export default class JPS3D {
 			wireframe: false,
 			skeleton: false,
 			addLights: true,
+			play: false,
 		};
 
 		this.gui = new dat.gui.GUI();
@@ -237,11 +240,12 @@ export default class JPS3D {
 		}
 
 		for(let i=0; i<this.pedestrians.length; i++){
-
+			// Wireframe
 			this.traverseMaterials(this.pedestrians[i], (material) => {
 				material.wireframe = this.state.wireframe;
 			});
 
+			// SkeletonHelper
 			this.pedestrians[i].traverse((node) => {
 				if (node.isMesh && node.skeleton && this.state.skeleton) {
 					const helper = new three.SkeletonHelper(node.skeleton.bones[0].parent);
@@ -251,7 +255,9 @@ export default class JPS3D {
 				}
 			});
 
+			// Pedestrian visibility
 			this.pedestrians[i].visible = this.state.pedestrians;
+
 		}
 
 	}
@@ -266,22 +272,23 @@ export default class JPS3D {
 		});
 	}
 
-	updatePedLocation(pedestriansLocation: TraFile['pedestrians'], frame: number){
+	updatePedLocation(){
 
-		// for(let i = 0; i<this.pe.length; i++){
-		// 	const pedestrian = this.pedestrians[i]
-		// 	const name = parseFloat(pedestrian.name);
-		//
-		// 	if (frame < pedestriansLocation[name].length){
-		// 		const location = pedestriansLocation[name][frame];
-		//
-		// 		this.pedestrians[i].translateX(location.coordinate.x);
-		// 		this.pedestrians[i].translateZ(location.coordinate.y);
-		// 		this.pedestrians[i].translateY(location.coordinate.z);
-		// 	}
-		//
-		//
-		// }
+	}
+
+	resetPedLocation(){
+		for(let i=0; i<this.pedestrians.length; i++){
+			if(!this.state.play) {
+				const id = parseInt(this.pedestrians[i].name);
+				const startLocation = this.trajectory.pedestrians[id-1][0];
+				this.pedestrians[i].translateX(startLocation.coordinate.x);
+				console.log(startLocation.coordinate.x);
+				this.pedestrians[i].translateZ(startLocation.coordinate.y);
+				console.log(startLocation.coordinate.z);
+				this.pedestrians[i].translateY(startLocation.coordinate.y);
+				console.log(startLocation.coordinate.y);
+			}
+		}
 	}
 
 	onResize() {
@@ -304,6 +311,8 @@ export default class JPS3D {
 		this.postprocessing.render();
 		this.stats.update();
 		this.controls.update();
+
+
 
 		const dt = this.clock.getDelta();
 		this.mixers.forEach(mixer => mixer.update(dt));
