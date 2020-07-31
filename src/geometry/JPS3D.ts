@@ -37,6 +37,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as dat from 'dat.gui/build/dat.gui.js';
+import {Button} from "antd";
 
 const AMBIENT_LIGHT_COLOR = 0x404040;
 
@@ -71,6 +72,7 @@ export default class JPS3D {
 	private frame: number;
 	private state: {};
 	private skeletonHelpers: three.SkeletonHelper[];
+	private walkingClip: three.AnimationClip;
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
@@ -147,8 +149,10 @@ export default class JPS3D {
 				'/pedestrian/man_001.gltf',
 				(gltf) => {
 					gltf.scene.name = (i+1).toString();
+					gltf.scene.visible = false;
 					this.scene.add(gltf.scene);
 					this.pedestrians.push(gltf.scene);
+
 					this.setMixer(gltf.scene, gltf.animations[0]);
 				},
 				// called while loading is progressing
@@ -168,15 +172,16 @@ export default class JPS3D {
 		// Add dat gui
 		this.skeletonHelpers = [];
 		this.state = {
-			pedestrians: true,
+			pedestrians: false,
 			wireframe: false,
 			skeleton: false,
 			addLights: true,
-			play: false,
+
 		};
 
 		this.gui = new dat.gui.GUI();
 		const dispFolder = this.gui.addFolder( 'Display' );
+		const playFolder = this.gui.addFolder('Play Controller')
 
 		const pedCtrl = dispFolder.add(this.state,'pedestrians')
 		pedCtrl.onChange(() => this.updatePedDisplay());
@@ -184,6 +189,9 @@ export default class JPS3D {
 		wireframeCtrl.onChange(() => this.updatePedDisplay());
 		const skeletonCtrl = dispFolder.add(this.state, 'skeleton');
 		skeletonCtrl.onChange(() => this.updatePedDisplay());
+
+		playFolder.add({play: () => this.playAnimition()}, 'play');
+		playFolder.add({pause: () => this.pauseAnimition()}, 'pause');
 
 		// Add sky
 		addSky(this.scene);
@@ -228,10 +236,11 @@ export default class JPS3D {
 			}
 		});
 
+		this.walkingClip = clip;
+
 		const mixer = new three.AnimationMixer( object );
 		this.mixers.push(mixer);
-		const action = mixer.clipAction(clip);
-		action.play();
+
 	}
 
 	updatePedDisplay () {
@@ -276,18 +285,28 @@ export default class JPS3D {
 
 	}
 
+	playAnimition(){
+		for(let i=0; i<this.mixers.length; i++){
+			const action = this.mixers[i].clipAction(this.walkingClip);
+			action.play();
+		}
+	}
+
+	pauseAnimition(){
+		for(let i=0; i<this.mixers.length; i++){
+			const action = this.mixers[i].clipAction(this.walkingClip);
+			action.stop();
+		}
+	}
+
 	resetPedLocation(){
 		for(let i=0; i<this.pedestrians.length; i++){
-			if(!this.state.play) {
-				const id = parseInt(this.pedestrians[i].name);
-				const startLocation = this.trajectory.pedestrians[id-1][0];
-				this.pedestrians[i].translateX(startLocation.coordinate.x);
-				console.log(startLocation.coordinate.x);
-				this.pedestrians[i].translateZ(startLocation.coordinate.y);
-				console.log(startLocation.coordinate.z);
-				this.pedestrians[i].translateY(startLocation.coordinate.y);
-				console.log(startLocation.coordinate.y);
-			}
+			const id = parseInt(this.pedestrians[i].name);
+			const startLocation = this.trajectory.pedestrians[id-1][0];
+			this.pedestrians[i].translateX(startLocation.coordinate.x);
+			this.pedestrians[i].translateZ(startLocation.coordinate.y);
+			this.pedestrians[i].translateY(startLocation.coordinate.y);
+
 		}
 	}
 
