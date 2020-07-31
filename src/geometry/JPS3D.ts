@@ -66,7 +66,8 @@ export default class JPS3D {
 	private loader: GLTFLoader;
 	private mixers: three.AnimationMixer[];
 	private clock: three.Clock;
-	private pedestrians: three.Object3D[]; // this.pedestrians contains all imported models of pedestrian, not the trajectory data
+	private pedestrians: three.Object3D[];// this.pedestrians contains all imported models of pedestrian, not the trajectory data
+	private pedRadius: three.Line[];
 	private trajectory: TraFile;
 	private init: InitResources;
 	private frame: number;
@@ -142,6 +143,7 @@ export default class JPS3D {
 		this.loader = new GLTFLoader();
 		this.mixers = [];
 		this.pedestrians = [];
+		this.pedRadius = []
 		this.frame = 0;
 
 		for(let i = 0; i<this.trajectory.pedestrians.length; i++){
@@ -167,7 +169,6 @@ export default class JPS3D {
 				});
 		}
 
-		this.resetPedLocation();
 
 		// Add dat gui
 		this.skeletonHelpers = [];
@@ -176,6 +177,7 @@ export default class JPS3D {
 			wireframe: false,
 			skeleton: false,
 			addLights: true,
+			radius: false,
 
 		};
 
@@ -192,6 +194,7 @@ export default class JPS3D {
 
 		playFolder.add({play: () => this.playAnimition()}, 'play');
 		playFolder.add({pause: () => this.pauseAnimition()}, 'pause');
+		playFolder.add({reset: () => this.resetPedLocation()}, 'reset')
 
 		// Add sky
 		addSky(this.scene);
@@ -266,7 +269,6 @@ export default class JPS3D {
 
 			// Pedestrian visibility
 			this.pedestrians[i].visible = this.state.pedestrians;
-
 		}
 
 	}
@@ -300,13 +302,24 @@ export default class JPS3D {
 	}
 
 	resetPedLocation(){
+		// Stop animation at first
+		for(let i=0; i<this.mixers.length; i++){
+			const action = this.mixers[i].clipAction(this.walkingClip);
+			action.stop();
+		}
 		for(let i=0; i<this.pedestrians.length; i++){
 			const id = parseInt(this.pedestrians[i].name);
 			const startLocation = this.trajectory.pedestrians[id-1][0];
-			this.pedestrians[i].translateX(startLocation.coordinate.x);
-			this.pedestrians[i].translateZ(startLocation.coordinate.y);
-			this.pedestrians[i].translateY(startLocation.coordinate.y);
+			this.pedestrians[i].position.x = 0;
+			this.pedestrians[i].position.y = 0;
+			this.pedestrians[i].position.z = 0;
+			this.pedestrians[i].rotation.y = 0;
 
+
+			this.pedestrians[i].translateX(startLocation.coordinate.x);
+			this.pedestrians[i].translateZ(startLocation.coordinate.y); // Y axes in trejactory = Z axes in three.JS
+			this.pedestrians[i].translateY(startLocation.coordinate.z); // Z axes in trejactory = Y axes in three.JS
+			this.pedestrians[i].rotateY(startLocation.angle); // Rotation of pedestrain
 		}
 	}
 
