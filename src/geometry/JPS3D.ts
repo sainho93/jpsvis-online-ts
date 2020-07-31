@@ -178,6 +178,7 @@ export default class JPS3D {
 			skeleton: false,
 			addLights: true,
 			radius: false,
+			showTrajectory: false
 
 		};
 
@@ -191,9 +192,11 @@ export default class JPS3D {
 		wireframeCtrl.onChange(() => this.updatePedDisplay());
 		const skeletonCtrl = dispFolder.add(this.state, 'skeleton');
 		skeletonCtrl.onChange(() => this.updatePedDisplay());
+		const radiusCtrl = dispFolder.add(this.state, 'radius'); //TODO: Present radius
+		radiusCtrl.onChange(() => this.updateRaius());
 
-		playFolder.add({play: () => this.playAnimition()}, 'play');
-		playFolder.add({pause: () => this.pauseAnimition()}, 'pause');
+		playFolder.add({play: () => this.playAnimation()}, 'play');
+		playFolder.add({pause: () => this.pauseAnimation()}, 'pause');
 		playFolder.add({reset: () => this.resetPedLocation()}, 'reset')
 
 		// Add sky
@@ -284,21 +287,42 @@ export default class JPS3D {
 	}
 
 	updatePedLocation(){
+		if(this.state.showTrajectory){
+			for(let i=0; i<this.pedestrians.length; i++){
+				const id = parseInt(this.pedestrians[i].name);
+				const frame = Math.floor(this.frame/8);
+				if(frame < this.trajectory.pedestrians[id-1].length){
+					const startLocation = this.trajectory.pedestrians[id-1][frame];
 
+					this.pedestrians[i].rotation.y = startLocation.angle; // Rotation of pedestrain
+					this.pedestrians[i].position.x = startLocation.coordinate.x;
+					this.pedestrians[i].position.y = startLocation.coordinate.z; // Y axes in trejactory = Z axes in three.JS
+					this.pedestrians[i].position.z = startLocation.coordinate.y; // Z axes in trejactory = Y axes in three.JS
+				}
+			}
+
+			this.frame += 1;
+		}
 	}
 
-	playAnimition(){
+	playAnimation(){
+		// Play walking animation
 		for(let i=0; i<this.mixers.length; i++){
 			const action = this.mixers[i].clipAction(this.walkingClip);
 			action.play();
 		}
+
+		this.state.showTrajectory = true;
+
 	}
 
-	pauseAnimition(){
+	pauseAnimation(){
 		for(let i=0; i<this.mixers.length; i++){
 			const action = this.mixers[i].clipAction(this.walkingClip);
 			action.stop();
 		}
+
+		this.state.showTrajectory = false;
 	}
 
 	resetPedLocation(){
@@ -321,6 +345,46 @@ export default class JPS3D {
 			this.pedestrians[i].translateY(startLocation.coordinate.z); // Z axes in trejactory = Y axes in three.JS
 			this.pedestrians[i].rotateY(startLocation.angle); // Rotation of pedestrain
 		}
+
+		this.frame = 0;
+		this.state.showTrajectory = false;
+	}
+
+	updateRaius(){
+		for(let i=0; i<this.pedestrians.length; i++) {
+			const id = parseInt(this.pedestrians[i].name);
+			const startLocation = this.trajectory.pedestrians[id - 1][this.frame];
+
+			const radius = new three.EllipseCurve(
+				0, 0,
+				startLocation.axes.A, startLocation.axes.B,
+				0, 2 * Math.PI,
+				false,
+				0,
+			);
+
+			const points = radius.getPoint(50);
+			const geometry = new three.BufferGeometry().setFromPoints(points);
+
+			function componentToHex(c:number) {
+				const hex = c.toString(16);
+				return hex.length == 1 ? "0" + hex : hex;
+			}
+
+			function rgbToHex(r: number, g: number, b: number) {
+				return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+			}
+
+			const material = new three.LineBasicMaterial({color : rgbToHex(startLocation.color, 0,0,)})
+			const radiusMesh = new three.Line(geometry, material);
+			// radiusMesh.translateX(startLocation.coordinate.x);
+			// radiusMesh.translateY(0.5);
+			// radiusMesh.translateZ(startLocation.coordinate.y);
+			this.scene.add(radiusMesh);
+			this.pedRadius.push(radiusMesh);
+
+		}
+
 	}
 
 	onResize() {
@@ -344,11 +408,11 @@ export default class JPS3D {
 		this.stats.update();
 		this.controls.update();
 
-
-
 		const dt = this.clock.getDelta();
 		this.mixers.forEach(mixer => mixer.update(dt));
 
+
+		this.updatePedLocation();
 	}
 
 
