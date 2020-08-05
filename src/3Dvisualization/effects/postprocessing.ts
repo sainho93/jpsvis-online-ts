@@ -61,14 +61,12 @@ export default class Effects {
 		camera: three.Camera,
 		scene: three.Scene,
 		renderer: three.Renderer,
-		gui: typeof dat.gui.GUI,
 		width: number,
 		height: number,
 	) {
 		this.camera = camera;
 		this.scene = scene;
 		this.renderer = renderer;
-		this.gui = gui;
 
 		this.depthMaterial = new three.MeshDepthMaterial();
 		this.depthMaterial.depthPacking = three.RGBADepthPacking;

@@ -27,7 +27,7 @@ import * as _ from 'lodash';
 import * as three from 'three';
 import addSky from './effects/sky';
 import * as Stats from 'stats.js'
-import { InitResources } from './initialization';
+import { InitResources } from '../initialization';
 import Postprocessing from './effects/postprocessing';
 import Geometry from './geometry';
 import { TraFile } from './trajectory';
@@ -37,17 +37,16 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as dat from 'dat.gui/build/dat.gui.js';
-import {Button} from "antd";
 
 const AMBIENT_LIGHT_COLOR = 0x404040;
 
-export interface Params {
-	onClick: (
-		XY: [number, number] | null,
-	) => any;
-	onUnfollow: () => any;
-	onRemove: (id: string) => any;
-	onUnhighlight: () => any;
+interface state {
+	pedestrians: boolean,
+	wireframe: boolean,
+	skeleton: boolean,
+	addLights: boolean,
+	radius: boolean,
+	showTrajectory: boolean
 }
 
 export default class JPS3D {
@@ -71,7 +70,7 @@ export default class JPS3D {
 	private trajectory: TraFile;
 	private init: InitResources;
 	private frame: number;
-	private state: {};
+	private state: state;
 	private skeletonHelpers: three.SkeletonHelper[];
 	private walkingClip: three.AnimationClip;
 
@@ -98,6 +97,8 @@ export default class JPS3D {
 		this.camera = new three.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
 
 		parentElement.appendChild(this.renderer.domElement);
+
+
 
 		// clock
 		this.clock = new three.Clock();
@@ -179,7 +180,6 @@ export default class JPS3D {
 			addLights: true,
 			radius: false,
 			showTrajectory: false
-
 		};
 
 		this.gui = new dat.gui.GUI();
@@ -208,7 +208,6 @@ export default class JPS3D {
 			this.camera,
 			this.scene,
 			this.renderer,
-			this.gui,
 			this.width,
 			this.height,
 		);
@@ -216,7 +215,7 @@ export default class JPS3D {
 		// stats.js
 		this.stats = new Stats();
 		this.stats.showPanel(0); // 0 = show stats on FPS
-		parentElement.appendChild(this.stats.dom);
+		this.parentElement.appendChild(this.stats.dom);
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
 
 		// animate() is a callback func for requestAnimationFrame()
@@ -312,6 +311,7 @@ export default class JPS3D {
 			action.play();
 		}
 
+		// Allow presenting trajectory
 		this.state.showTrajectory = true;
 
 	}
@@ -322,6 +322,7 @@ export default class JPS3D {
 			action.stop();
 		}
 
+		// Pause presenting trajectory
 		this.state.showTrajectory = false;
 	}
 
@@ -386,6 +387,7 @@ export default class JPS3D {
 		}
 
 	}
+
 
 	onResize() {
 		const width = this.parentElement.clientWidth;

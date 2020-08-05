@@ -150,7 +150,7 @@ async def post_file(request):
 
 def setup_server():
     app = web.Application()
-    aiohttp_debugtoolbar.setup(app)
+    # aiohttp_debugtoolbar.setup(app)
 
     # CORS Implementation
     # `aiohttp_cors.setup` returns `aiohttp_cors.CorsConfig` instance.
@@ -170,6 +170,7 @@ def setup_server():
     # Routers
     app.router.add_get("/", index)
     app.router.add_get("/ViewPage", index)
+    app.router.add_get("/AnalyzePage", index)
     app.router.add_get("/geometry", get_geometry)
     app.router.add_get("/trajectory", get_trajectory)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))

@@ -24,8 +24,8 @@
 import React from 'react'
 import SwitchBar from './switchbar'
 import './view-page.css'
-import init from '../geometry/initialization';
-import startScene from '../geometry/datamanager';
+import init from '../initialization';
+import startJPS3D from '../datamanager';
 
 import { Layout } from 'antd';
 const { Content, Footer} = Layout;
@@ -35,7 +35,7 @@ class ViewPage extends React.Component {
   componentDidMount(){
     (async () => {
         const initResources = await init();
-        startScene(initResources);
+        startJPS3D(initResources);
       }
     )();
   }
@@ -47,7 +47,6 @@ class ViewPage extends React.Component {
           <div id="canvas" className="view-page-canvas">
           </div>
         </Content>
-        <Footer/>
       </Layout>
     )
   }

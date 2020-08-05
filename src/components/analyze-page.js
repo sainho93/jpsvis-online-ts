@@ -23,19 +23,30 @@
 
 import React from 'react'
 import SwitchBar from './switchbar'
+import './analyze-page.css'
+import { Layout } from 'antd'
+import init from '../initialization'
 
-import { Row, Col } from 'antd'
+const { Content, Footer} = Layout;
 
 class AnalyzePage extends React.Component {
+  // Load Three.JS after <canvas/> node is mounted into DOM
+  componentDidMount(){
+    (async () => {
+        const initResources = await init();
+      }
+    )();
+  }
   render () {
     return (
-      <>
-        <Row justify="center">
-          <Col span={4}>
-            <SwitchBar/>
-          </Col>
-        </Row>
-      </>
+      <Layout >
+        <Content >
+          <div id="canvas" className="analyze-page-canvas"/>
+        </Content>
+        <Footer className="analyze-page-layout-footer">
+          <SwitchBar/>
+        </Footer>
+      </Layout>
     )
   }
 }

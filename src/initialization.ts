@@ -21,8 +21,8 @@
  * along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {GeoFile} from './geometry'
-import {TraFile} from './trajectory'
+import {GeoFile} from './3Dvisualization/geometry'
+import {TraFile} from './3Dvisualization/trajectory'
 
 export interface InitResources {
 	geometryData: GeoFile;
@@ -50,7 +50,6 @@ async function fetchJson<T>(url: string): Promise<T> {
 
 	return val;
 }
-
 
 
 export default async function init (): Promise<InitResources> {

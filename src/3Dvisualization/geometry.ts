@@ -1,5 +1,5 @@
 /*
- * \file geometry.ts
+ * \file 3Dvisualization.ts
  * \date 2020 - 6 - 29
  * \author Tao Zhong
  * \copyright <2009 - 2020> Forschungszentrum Jülich GmbH. All rights reserved.
@@ -36,7 +36,7 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 
 
 export interface GeoFile {
-	geometry: Geometry; // geometry property means 'geometry' Tag
+	geometry: Geometry; // Geometry property means 'geometry' Tag
 }
 
 interface Rooms {

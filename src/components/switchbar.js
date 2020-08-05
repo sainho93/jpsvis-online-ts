@@ -24,24 +24,23 @@
  */
 
 import React from 'react'
-import { Radio } from 'antd'
+import { Button, message, Radio, Space} from 'antd'
 import { Link } from 'react-router-dom'
+import { Row, Col } from 'antd'
 
 class SwitchBar extends React.Component {
   render () {
     return (
-      <Radio.Group buttonStyle="solid">
-        <Radio.Button value="a">
-          <Link to='ViewPage'>
-            Simulation
-          </Link>
-        </Radio.Button>
-        <Radio.Button value="b">
-          <Link to='AnalyzePage'>
-            Analyzing
-          </Link>
-        </Radio.Button>
-      </Radio.Group>
+      <>
+        <Space>
+          <Button >
+            <Link to="/ViewPage">3D Visualization</Link>
+          </Button>
+          <Button >
+            <Link to="/AnalyzePage">2D Analyzing</Link>
+          </Button>
+        </Space>
+      </>
     )
   }
 }

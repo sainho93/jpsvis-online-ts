@@ -34,7 +34,6 @@ import App from './components/App'
     )
   }
   render()
-
 })().catch(e => {
   const h = document.createElement('H1')
   h.innerText = '500 Server Error'
