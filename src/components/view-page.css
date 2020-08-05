@@ -31,8 +31,13 @@
 
 .view-page-layout-content {
     min-height: 360px;
+    height: 100%;
 }
 
 .view-page-canvas{
     height: 100%;
+}
+
+.view-page-layout-footer {
+    text-align: center;
 }

@@ -25,9 +25,9 @@ import React from 'react'
 import SwitchBar from './switchbar'
 import './view-page.css'
 import init from '../initialization';
-import startJPS3D from '../datamanager';
+import JPS3D from '../3Dvisualization/JPS3D'
 
-import { Layout } from 'antd';
+import { Layout } from 'antd'
 const { Content, Footer} = Layout;
 
 class ViewPage extends React.Component {
@@ -35,18 +35,29 @@ class ViewPage extends React.Component {
   componentDidMount(){
     (async () => {
         const initResources = await init();
-        startJPS3D(initResources);
+        this.jps3D = new JPS3D(initResources.geometryRootEl, initResources);
       }
     )();
+  }
+
+  // Remove dat.gui menus when change pages
+  componentWillUnmount () {
+    const guiMenus = document.getElementsByClassName('dg main a');
+
+    for(let i = guiMenus.length - 1; i>=0; i--){
+      guiMenus[i].parentNode.removeChild(guiMenus[i]);
+    }
   }
 
   render () {
     return (
       <Layout className="view-page-layout">
         <Content className="view-page-layout-content">
-          <div id="canvas" className="view-page-canvas">
-          </div>
+          <div id="canvas" className="view-page-canvas"/>
         </Content>
+        <Footer className="view-page-layout-footer">
+          <SwitchBar/>
+        </Footer>
       </Layout>
     )
   }
