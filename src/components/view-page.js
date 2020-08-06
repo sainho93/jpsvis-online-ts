@@ -22,13 +22,15 @@
  */
 
 import React from 'react'
-import SwitchBar from './switchbar'
 import './view-page.css'
 import init from '../initialization';
 import JPS3D from '../3Dvisualization/JPS3D'
 
-import { Layout } from 'antd'
+import { Button, Cascader, Layout, Space } from 'antd'
+import Dragger from 'antd/es/upload/Dragger'
+import Sider from 'antd/es/layout/Sider'
 const { Content, Footer} = Layout;
+import { InboxOutlined } from '@ant-design/icons'
 
 class ViewPage extends React.Component {
   // Load Three.JS after <canvas/> node is mounted into DOM
@@ -52,12 +54,28 @@ class ViewPage extends React.Component {
   render () {
     return (
       <Layout className="view-page-layout">
-        <Content className="view-page-layout-content">
-          <div id="canvas" className="view-page-canvas"/>
-        </Content>
-        <Footer className="view-page-layout-footer">
-          <SwitchBar/>
-        </Footer>
+        <Sider width={"25%"} theme={"light"} className="view-page-sider">
+          <Space direction="vertical" align="center">
+            <Dragger>
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">Click or drag output files from JPSReport to this area to upload</p>
+            </Dragger>
+            <>
+              <Space>
+                <Cascader options={this.options}/>
+                <Button>Start Plot</Button>
+              </Space>
+            </>
+          </Space>
+        </Sider>
+
+        <Layout className="view-page-layout">
+          <Content className="view-page-layout-content">
+            <div id="canvas" className="view-page-canvas"/>
+          </Content>
+        </Layout>
       </Layout>
     )
   }

@@ -24,8 +24,11 @@
 import React from 'react'
 import SwitchBar from './switchbar'
 import './analyze-page.css'
-import { Layout } from 'antd'
+import { Button, Cascader, Layout, Space } from 'antd'
 import init from '../initialization'
+import Sider from 'antd/es/layout/Sider'
+import Dragger from 'antd/es/upload/Dragger'
+import { InboxOutlined } from '@ant-design/icons'
 
 const { Content, Footer} = Layout;
 
@@ -37,15 +40,36 @@ class AnalyzePage extends React.Component {
       }
     )();
   }
+
+
+  options = [
+    {
+      value: 'demo',
+      label: 'demo',
+    }
+  ]
+
   render () {
     return (
-      <Layout >
-        <Content >
-          <div id="canvas" className="analyze-page-canvas"/>
-        </Content>
-        <Footer className="analyze-page-layout-footer">
-          <SwitchBar/>
-        </Footer>
+      <Layout className="analyze-page-layout">
+        <Sider width={"25%"} theme={"light"} className="analyze-page-sider">
+          <Space direction="vertical" align="center">
+            <Dragger>
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">Click or drag output files from JPSReport to this area to upload</p>
+            </Dragger>
+            <Cascader options={this.options}/>
+            <Button>Start Plot</Button>
+            <Button>Download Plot</Button>
+            <SwitchBar/>
+          </Space>
+        </Sider>
+        <Layout>
+          <Content >
+          </Content>
+        </Layout>
       </Layout>
     )
   }

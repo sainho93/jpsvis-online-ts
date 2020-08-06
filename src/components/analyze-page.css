@@ -1,7 +1,12 @@
-.analyze-page-layout-footer {
-    text-align: center;
+
+.analyze-page-layout{
+    height: 100%;
+    flex-direction: row;
+
 }
 
-.analyze-page-canvas{
-
+.analyze-page-sider{
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
 }

@@ -27,6 +27,7 @@
 
 .view-page-layout{
     height: 100%;
+    flex-direction: row;
 }
 
 .view-page-layout-content {
@@ -41,3 +42,11 @@
 .view-page-layout-footer {
     text-align: center;
 }
+
+.view-page-sider {
+
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+}
+

@@ -26,7 +26,6 @@
 import React from 'react'
 import { Button, message, Radio, Space} from 'antd'
 import { Link } from 'react-router-dom'
-import { Row, Col } from 'antd'
 
 class SwitchBar extends React.Component {
   render () {
@@ -34,10 +33,10 @@ class SwitchBar extends React.Component {
       <>
         <Space>
           <Button >
-            <Link to="/ViewPage">3D Visualization</Link>
+            <Link to="/ViewPage">Visualization</Link>
           </Button>
           <Button >
-            <Link to="/AnalyzePage">2D Analyzing</Link>
+            <Link to="/AnalyzePage">Analyzing</Link>
           </Button>
         </Space>
       </>

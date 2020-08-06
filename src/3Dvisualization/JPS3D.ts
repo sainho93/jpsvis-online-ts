@@ -215,8 +215,11 @@ export default class JPS3D {
 		// stats.js
 		this.stats = new Stats();
 		this.stats.showPanel(0); // 0 = show stats on FPS
-		this.parentElement.appendChild(this.stats.dom);
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
+		this.stats.dom.style.left = '25%'
+		this.parentElement.appendChild(this.stats.dom);
+
+
 
 		// animate() is a callback func for requestAnimationFrame()
 		// its 'this' should be set to the JPS3D instance
