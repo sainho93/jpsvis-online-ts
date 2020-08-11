@@ -22,16 +22,12 @@
 
 from aiohttp import web
 import aiohttp_cors
-import os
 import json
 import asyncio
 import logging
 import pathlib
 import base64
-import io
 from numpy import *
-from flask import render_template
-import matplotlib.pyplot as plt
 
 from xml.etree import ElementTree as ET
 import xmltodict
@@ -106,9 +102,10 @@ async def get_gait(request):
     gait_file = 'gait.dat'
 
 
+# Handler for request "/N_t"
 async def get_Nt(request):
-    Nt_file = 'N_t.dat'
-    _Plot_N_t.plot_Nt(Nt_file)
+    nt_file = 'N_t.dat'
+    _Plot_N_t.plot_Nt(nt_file)
 
     with open("N_t.png", "rb") as img_f:
         return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
@@ -191,7 +188,7 @@ def setup_server():
         )
     })
     resource = cors.add(app.router.add_resource("/upload"))
-    cors.add(resource.add_route("POST", post_file))  # Add handler for POST request on ./upload
+    cors.add(resource.add_route("POST", post_file))
 
     # Routers
     app.router.add_get("/", index)

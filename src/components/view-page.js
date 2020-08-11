@@ -37,7 +37,7 @@ import axios from 'axios'
 class ViewPage extends React.Component {
   state = {
     opened: false,
-    url: 'N_t',
+    url: '',
     selectedFile: null,
     imgData: ''
   }
@@ -60,13 +60,17 @@ class ViewPage extends React.Component {
     }
   }
 
+  // Set url of state
+  diagrammChanged = (value) => {
+    this.setState(prevState => ({url: value}))
+  }
+
+  // Fetch base64 data of plot depends on url
   toggleOpened() {
-    fetch('N_t')
+    fetch(this.state.url)
       .then(response => response.text())
       .then(data => {
         this.setState(prevState => ({imgData: data}))
-        const img = "data:image/png;base64," + data;
-        console.log(img)
       });
     this.setState(prevState => ({opened: !prevState.opened}))
   }
@@ -75,7 +79,6 @@ class ViewPage extends React.Component {
     this.setState({ opened: false })
   }
 
-  /* Event handlers */
   onChangeHandler=event => {
     this.setState({
       selectedFile: event.target.files[0],
@@ -110,7 +113,7 @@ class ViewPage extends React.Component {
         label: 'Gait'
       },
       {
-        value: 'N-t',
+        value: 'N_t',
         label: 'N-t Diagram'
       },
       {
@@ -122,15 +125,15 @@ class ViewPage extends React.Component {
         label: 'Density - Velocity',
         children: [
           {
-            value: 'b',
+            value: 'Method_B',
             label: 'Method B'
           },
           {
-            value: 'c',
+            value: 'Method_C',
             label: 'Method C'
           },
           {
-            value: 'd',
+            value: 'Method_D',
             label: 'Method D'
           }
         ]
@@ -185,7 +188,7 @@ class ViewPage extends React.Component {
             </div>
             <>
               <Space>
-                <Cascader options={options}/>
+                <Cascader options={options} onChange={this.diagrammChanged}/>
                 <Button onClick={() => this.toggleOpened()}>
                   Start Plot
                 </Button>
