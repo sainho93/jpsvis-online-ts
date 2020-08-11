@@ -27,9 +27,17 @@ import json
 import asyncio
 import logging
 import pathlib
-import aiohttp_debugtoolbar
+import base64
+import io
+from numpy import *
+from flask import render_template
+import matplotlib.pyplot as plt
+
 from xml.etree import ElementTree as ET
 import xmltodict
+import sys
+sys.path.append("..")
+from analysis import _Plot_N_t
 
 # Base directory
 PROJ_ROOT = pathlib.Path(__file__).parent.parent.parent
@@ -88,6 +96,24 @@ def parse_pedestrian(dataline):
     return location
 
 
+async def index(request):
+    # Avoid web.FileResponse here because we want to disable caching.
+    html = open(str(PROJ_ROOT / 'static' / 'index.html')).read()
+    return web.Response(text=html, content_type='text/html', headers=NO_CACHE_HEADER)
+
+
+async def get_gait(request):
+    gait_file = 'gait.dat'
+
+
+async def get_Nt(request):
+    Nt_file = 'N_t.dat'
+    _Plot_N_t.plot_Nt(Nt_file)
+
+    with open("N_t.png", "rb") as img_f:
+        return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
+
+
 async def get_geometry(request):
     geo_file = 'geometry.xml'
     return web.Response(text=json.dumps(parse_geometry_file(geo_file), ensure_ascii=False))
@@ -96,12 +122,6 @@ async def get_geometry(request):
 async def get_trajectory(request):
     tra_file = 'trajectory.txt'
     return web.Response(text=json.dumps(parse_trajectory_file(tra_file), ensure_ascii=False))
-
-
-async def index(request):
-    # Avoid web.FileResponse here because we want to disable caching.
-    html = open(str(PROJ_ROOT / 'static' / 'index.html')).read()
-    return web.Response(text=html, content_type='text/html', headers=NO_CACHE_HEADER)
 
 
 # Upload request handler
@@ -138,6 +158,12 @@ async def post_file(request):
                 os.rename(filename, 'trajectory.txt')
 
                 text = {'res': '200'}
+            elif filename.endswith('.dat'):
+                filetype = filename.split('_')[1]
+                if filetype == 'NT':
+                    os.rename(filename, 'N_t.dat')
+
+                text = {'res': '200'}
             else:
                 text = {'res': '500'}
 
@@ -164,7 +190,7 @@ def setup_server():
             max_age=3600,
         )
     })
-    resource = cors.add(app.router.add_resource("/upload/"))
+    resource = cors.add(app.router.add_resource("/upload"))
     cors.add(resource.add_route("POST", post_file))  # Add handler for POST request on ./upload
 
     # Routers
@@ -173,6 +199,8 @@ def setup_server():
     # app.router.add_get("/AnalyzePage", index)
     app.router.add_get("/geometry", get_geometry)
     app.router.add_get("/trajectory", get_trajectory)
+    app.router.add_get("/gait", get_gait)
+    app.router.add_get("/N_t", get_Nt)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
 
     return app
