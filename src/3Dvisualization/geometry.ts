@@ -26,7 +26,7 @@
 import * as _ from 'lodash'
 import * as three from 'three';
 
-import {BUILDING, TRANSITION, STAIR} from './materials'
+import {BUILDING, TRANSITION, STAIR, PLATFORM} from './materials'
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 
@@ -279,7 +279,19 @@ export default class Geometry {
 				stairMesh.name = subroom.caption;
 				return stairMesh;
 
-			}else {
+			}else if(subroom.class === 'platform'){
+				// Subroom is platform
+				const platformGeometry = this.makePlatform(subroom);
+				const platformMesh = new three.Mesh(platformGeometry, PLATFORM);
+
+				// As a subroom, A_x and B_y will always be 0
+				const elevation = parseFloat(subroom.C_z);
+				platformMesh.translateY(elevation);
+
+				platformMesh.name = subroom.caption;
+				return platformMesh;
+			}
+			else {
 				// Subroom has multi walls
 				const polygons: three.BufferGeometry[] = [];
 
@@ -288,7 +300,7 @@ export default class Geometry {
 
 				}
 
-				polygons.push(this.createGround(subroom));
+				polygons.push(this.createGround(subroom)); // Make a ground for subroom
 				subroomGeometry = BufferGeometryUtils.mergeBufferGeometries(polygons);
 			}
 
@@ -308,12 +320,46 @@ export default class Geometry {
 		return subroomMesh;
 	}
 
+	protected makePlatform (subroom: Subroom): three.BufferGeometry {
+		let platformGeometry: three.BufferGeometry;
+
+		if(Array.isArray(subroom.polygon)){
+			const tracks: three.BufferGeometry[] = [];
+
+			for (let i = 0; i < (subroom.polygon as Polygon[]).length; i++) {
+				const point1: three.Vector2  = new three.Vector2(parseFloat(subroom.polygon[i].vertex[0].px),
+					parseFloat(subroom.polygon[i].vertex[0].py));
+				const point2: three.Vector2 = new three.Vector2(parseFloat(subroom.polygon[i].vertex[1].px),
+					parseFloat(subroom.polygon[i].vertex[1].py));
+
+				// Length of wall
+				// length = sqrt(|x1-x2|*|x1-x2| + |y1-y2|*|y1-y2|)
+				const length: number = Math.sqrt(Math.pow(Math.abs(point1.x - point2.x),2)
+					+ Math.pow(Math.abs(point1.y - point2.y),2));
+
+				// Rotation angle
+				// angle = arctan(|y1-y2|/|x1-x2|) * PI/180
+				const angle = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
+
+				const track: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,0.2,0.1);
+				track.rotateY(angle);
+				track.translate((point1.x + point2.x)/2, 0.5, (point1.y + point2.y)/2);
+
+				tracks.push(track);
+			}
+
+			platformGeometry = BufferGeometryUtils.mergeBufferGeometries(tracks);
+		}
+
+		return platformGeometry;
+	}
+
 	protected makePolygon (polygon: Polygon): three.BoxBufferGeometry {
 		if(polygon.vertex.length != 2){
 			console.error( 'The format of polygon is wrong', polygon );
 			return;
 		}else {
-			const point1: three.Vector2 = new three.Vector2(parseFloat(polygon.vertex[0].px),
+			const point1: three.Vector2  = new three.Vector2(parseFloat(polygon.vertex[0].px),
 				parseFloat(polygon.vertex[0].py));
 			const point2: three.Vector2 = new three.Vector2(parseFloat(polygon.vertex[1].px),
 				parseFloat(polygon.vertex[1].py));

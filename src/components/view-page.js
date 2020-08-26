@@ -95,7 +95,7 @@ class ViewPage extends React.Component {
     data.append('file', this.state.selectedFile)
 
     axios
-      .post('http://localhost:8080/upload', data, {})
+      .post('http://localhost:8080/upload/', data, {})
       .then(res => {
         onSuccess(file)
         console.log(res)
@@ -109,37 +109,47 @@ class ViewPage extends React.Component {
   render () {
     const options = [
       {
-        value: 'gait',
-        label: 'Gait'
-      },
-      {
         value: 'N_t',
         label: 'N-t Diagram'
-      },
-      {
-        value: 'flow_velocity',
-        label: 'Flow - Velocity'
       },
       {
         value: 'density_velocity',
         label: 'Density - Velocity',
         children: [
           {
-            value: 'Method_B',
+            value: 'D_V_Method_B',
             label: 'Method B'
           },
           {
-            value: 'Method_C',
+            value: 'D_V_Method_C',
             label: 'Method C'
           },
           {
-            value: 'Method_D',
+            value: 'D_V_Method_D',
             label: 'Method D'
           }
         ]
       },
       {
-        value: 'density',
+        value: 'density_flow',
+        label: 'Density - Specific flow',
+        children: [
+          {
+            value: 'D_Js_Method_B',
+            label: 'Method B'
+          },
+          {
+            value: 'D_Js_Method_C',
+            label: 'Method C'
+          },
+          {
+            value: 'D_Js_Method_D',
+            label: 'Method D'
+          }
+        ]
+      },
+      {
+        value: 'voronoi',
         label: 'Voronoi Diagram',
         children: [
           {
@@ -154,7 +164,7 @@ class ViewPage extends React.Component {
       },
       {
         value: 'profiles',
-        label: 'Profiles',
+        label: 'Spatiotemporal Profiles',
         children: [
           {
             value: 'p_density',
@@ -163,10 +173,6 @@ class ViewPage extends React.Component {
           {
             value: 'p_velocity',
             label: 'Velocity'
-          },
-          {
-            value: 'p_specific',
-            label: 'Specific Flow'
           }
         ]
       }

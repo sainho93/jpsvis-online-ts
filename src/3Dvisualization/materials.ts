@@ -57,11 +57,21 @@ export const TRANSITION = new three.MeshPhysicalMaterial({
   roughness: 0.8,
   clearcoat: 0.6,
   clearcoatRoughness: 1.0,
-  reflectivity: 0.2
+  reflectivity: 0.2,
+  opacity: 0.5,
 })
 
 export const STAIR = new three.MeshPhysicalMaterial({
   color: '#BDE9C9',
+  metalness: 0,
+  roughness: 0.8,
+  clearcoat: 0.6,
+  clearcoatRoughness: 1.0,
+  reflectivity: 0.2
+})
+
+export const PLATFORM = new three.MeshPhysicalMaterial({
+  color: '#1B1639',
   metalness: 0,
   roughness: 0.8,
   clearcoat: 0.6,

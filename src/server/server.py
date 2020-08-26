@@ -27,7 +27,9 @@ import asyncio
 import logging
 import pathlib
 import base64
+import os
 from numpy import *
+
 
 from xml.etree import ElementTree as ET
 import xmltodict
@@ -139,10 +141,12 @@ async def post_file(request):
                 size += len(chunk)
                 f.write(chunk)
 
+            f.close()
+
             # Identify the file format
             # Rename according to the file format
             if filename.endswith('.xml'):
-                tree = ET.parse(filename)  # FixMe: can't load file for geometry.xml
+                tree = ET.parse(filename)
                 root = tree.getroot()
                 if root.tag == 'geometry':
                     os.rename(filename, 'geometry.xml')
@@ -193,7 +197,6 @@ def setup_server():
     # Routers
     app.router.add_get("/", index)
     app.router.add_get("/ViewPage", index)
-    # app.router.add_get("/AnalyzePage", index)
     app.router.add_get("/geometry", get_geometry)
     app.router.add_get("/trajectory", get_trajectory)
     app.router.add_get("/gait", get_gait)

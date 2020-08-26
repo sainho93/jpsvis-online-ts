@@ -79,7 +79,7 @@ class UploadPage extends React.Component {
   onChangeHandler=event => {
     this.setState({
       selectedFile: event.target.files[0],
-      loaded: 0
+      loaded: 0,
     })
   }
 
@@ -92,7 +92,7 @@ class UploadPage extends React.Component {
     data.append('file', this.state.selectedFile)
 
     axios
-      .post('http://localhost:8080/upload/', data, {})
+      .post('http://localhost:8080/upload', data, {})
       .then(res => {
         onSuccess(file)
         console.log(res)
