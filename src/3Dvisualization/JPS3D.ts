@@ -192,8 +192,6 @@ export default class JPS3D {
 		wireframeCtrl.onChange(() => this.updatePedDisplay());
 		const skeletonCtrl = dispFolder.add(this.state, 'skeleton');
 		skeletonCtrl.onChange(() => this.updatePedDisplay());
-		const radiusCtrl = dispFolder.add(this.state, 'radius'); //TODO: Present radius
-		radiusCtrl.onChange(() => this.updateRaius());
 
 		playFolder.add({play: () => this.playAnimation()}, 'play');
 		playFolder.add({pause: () => this.pauseAnimation()}, 'pause');
@@ -353,44 +351,6 @@ export default class JPS3D {
 		this.frame = 0;
 		this.state.showTrajectory = false;
 	}
-
-	updateRaius(){
-		for(let i=0; i<this.pedestrians.length; i++) {
-			const id = parseInt(this.pedestrians[i].name);
-			const startLocation = this.trajectory.pedestrians[id - 1][this.frame];
-
-			const radius = new three.EllipseCurve(
-				0, 0,
-				startLocation.axes.A, startLocation.axes.B,
-				0, 2 * Math.PI,
-				false,
-				0,
-			);
-
-			const points = radius.getPoint(50);
-			const geometry = new three.BufferGeometry().setFromPoints(points);
-
-			function componentToHex(c:number) {
-				const hex = c.toString(16);
-				return hex.length == 1 ? "0" + hex : hex;
-			}
-
-			function rgbToHex(r: number, g: number, b: number) {
-				return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-			}
-
-			const material = new three.LineBasicMaterial({color : rgbToHex(startLocation.color, 0,0,)})
-			const radiusMesh = new three.Line(geometry, material);
-			// radiusMesh.translateX(startLocation.coordinate.x);
-			// radiusMesh.translateY(0.5);
-			// radiusMesh.translateZ(startLocation.coordinate.y);
-			this.scene.add(radiusMesh);
-			this.pedRadius.push(radiusMesh);
-
-		}
-
-	}
-
 
 	onResize() {
 		const width = this.parentElement.clientWidth;

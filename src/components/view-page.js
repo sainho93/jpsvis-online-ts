@@ -25,9 +25,8 @@ import React from 'react'
 import './view-page.css'
 import init from '../initialization';
 import JPS3D from '../3Dvisualization/JPS3D'
-import NewWindow from 'react-new-window'
 
-import { Button, Cascader, Layout, Space } from 'antd'
+import { Button, Cascader, Layout, Space, Modal, Image} from 'antd'
 import Dragger from 'antd/es/upload/Dragger'
 import Sider from 'antd/es/layout/Sider'
 const { Content } = Layout;
@@ -36,10 +35,11 @@ import axios from 'axios'
 
 class ViewPage extends React.Component {
   state = {
-    opened: false,
     url: '',
     selectedFile: null,
-    imgData: ''
+    imgData: '',
+
+    visible: false,
   }
 
   // Load Three.JS after <canvas/> node is mounted into DOM
@@ -65,6 +65,28 @@ class ViewPage extends React.Component {
     this.setState(prevState => ({url: value}))
   }
 
+  onChangeHandler=event => {
+    this.setState({
+      selectedFile: event.target.files[0],
+      loaded: 0
+    })
+  }
+
+  // Handlers for modal
+  handleOk = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
   // Fetch base64 data of plot depends on url
   toggleOpened() {
     fetch(this.state.url)
@@ -72,18 +94,10 @@ class ViewPage extends React.Component {
       .then(data => {
         this.setState(prevState => ({imgData: data}))
       });
-    this.setState(prevState => ({opened: !prevState.opened}))
-  }
 
-  newWindowUnloaded() {
-    this.setState({ opened: false })
-  }
-
-  onChangeHandler=event => {
     this.setState({
-      selectedFile: event.target.files[0],
-      loaded: 0
-    })
+      visible: true,
+    });
   }
 
   // Dragger uses rc-upload component
@@ -117,10 +131,6 @@ class ViewPage extends React.Component {
         label: 'Density - Velocity',
         children: [
           {
-            value: 'D_V_Method_B',
-            label: 'Method B'
-          },
-          {
             value: 'D_V_Method_C',
             label: 'Method C'
           },
@@ -134,10 +144,6 @@ class ViewPage extends React.Component {
         value: 'density_flow',
         label: 'Density - Specific flow',
         children: [
-          {
-            value: 'D_Js_Method_B',
-            label: 'Method B'
-          },
           {
             value: 'D_Js_Method_C',
             label: 'Method C'
@@ -178,8 +184,6 @@ class ViewPage extends React.Component {
       }
     ]
 
-    const {opened} = this.state
-
     return (
       <Layout className="view-page-layout">
         <Sider width={"25%"} theme={"light"} className="view-page-sider">
@@ -198,13 +202,14 @@ class ViewPage extends React.Component {
                 <Button onClick={() => this.toggleOpened()}>
                   Start Plot
                 </Button>
-                {opened && (
-                  <NewWindow
-                    onUnload={() => this.newWindowUnloaded()}
-                  >
-                    <img src={"data:image/png;base64," + this.state.imgData}/>
-                  </NewWindow>
-                )}
+                <Modal title={this.state.url} visible={this.state.visible}
+                       onOk={this.handleOk} onCancel={this.handleCancel} width={700}>
+                  {/*<Image*/}
+                  {/*  width={400}*/}
+                  {/*  src = {"data:image/png;base64," + this.state.imgData}*/}
+                  {/*/>*/}
+                  <img src ={"data:image/png;base64," + this.state.imgData} width={500}/>
+                </Modal>
               </Space>
             </>
           </Space>
