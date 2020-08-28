@@ -18,8 +18,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
-
-
+import aiohttp_debugtoolbar
 from aiohttp import web
 import aiohttp_cors
 import json
@@ -177,9 +176,9 @@ async def post_file(request):
 
 def setup_server():
     app = web.Application()
-    # aiohttp_debugtoolbar.setup(app)
+    aiohttp_debugtoolbar.setup(app)
 
-    # CORS Implementation
+    # Add CORS implementation for /upload
     # `aiohttp_cors.setup` returns `aiohttp_cors.CorsConfig` instance.
     # The `cors` instance will store CORS configuration for the application.
     cors = aiohttp_cors.setup(app, defaults={

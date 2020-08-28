@@ -109,7 +109,7 @@ class ViewPage extends React.Component {
     data.append('file', this.state.selectedFile)
 
     axios
-      .post('http://localhost:8080/upload/', data, {})
+      .post('http://localhost:8080/upload', data, {})
       .then(res => {
         onSuccess(file)
         console.log(res)
@@ -121,7 +121,7 @@ class ViewPage extends React.Component {
   }
 
   render () {
-    const options = [
+    const diagrammOptions = [
       {
         value: 'N_t',
         label: 'N-t Diagram'
@@ -198,16 +198,12 @@ class ViewPage extends React.Component {
             </div>
             <>
               <Space>
-                <Cascader options={options} onChange={this.diagrammChanged}/>
+                <Cascader options={diagrammOptions} onChange={this.diagrammChanged}/>
                 <Button onClick={() => this.toggleOpened()}>
                   Start Plot
                 </Button>
                 <Modal title={this.state.url} visible={this.state.visible}
                        onOk={this.handleOk} onCancel={this.handleCancel} width={700}>
-                  {/*<Image*/}
-                  {/*  width={400}*/}
-                  {/*  src = {"data:image/png;base64," + this.state.imgData}*/}
-                  {/*/>*/}
                   <img src ={"data:image/png;base64," + this.state.imgData} width={500}/>
                 </Modal>
               </Space>
