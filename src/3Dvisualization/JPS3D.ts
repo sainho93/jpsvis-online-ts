@@ -186,7 +186,6 @@ export default class JPS3D {
 		const dispFolder = this.gui.addFolder( 'Display' );
 		const playFolder = this.gui.addFolder('Play Controller')
 
-
 		const pedCtrl = dispFolder.add(this.state,'pedestrians')
 		pedCtrl.onChange(() => this.updatePedDisplay());
 		const wireframeCtrl = dispFolder.add(this.state, 'wireframe');

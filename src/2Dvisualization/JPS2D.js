@@ -1,4 +1,7 @@
 import * as PIXI from 'pixi.js';
+import * as dat from 'dat.gui/build/dat.gui.js';
+import init from '../initialization';
+import JPS3D from '../3Dvisualization/JPS3D'
 
 class JPS2D {
   constructor (parentElement, init) {
@@ -13,6 +16,50 @@ class JPS2D {
 
     let app = new PIXI.Application({width: this.width, height: this.height});
     this.parentElement.appendChild(app.view);
+
+    // Add dat gui
+    this.gui = new dat.gui.GUI();
+
+    const playFolder = this.gui.addFolder('Play Controller')
+    playFolder.add({play: () => this.playAnimation()}, 'play');
+    playFolder.add({pause: () => this.pauseAnimation()}, 'pause');
+    playFolder.add({reset: () => this.resetPedLocation()}, 'reset');
+    this.gui.add({Switch_To_3D: () => this.switchTo3D()}, 'Switch_To_3D');
+
+  }
+
+  switchTo3D () {
+    // Clear 2D view
+    const canvas = document.getElementsByTagName('canvas');
+
+    for(let i = canvas.length - 1; i>=0; i--){
+      canvas[i].parentNode.removeChild(canvas[i]);
+    }
+
+    // Clear dat.gui
+    const guiMenus = document.getElementsByClassName('dg main a');
+
+    for(let i = guiMenus.length - 1; i>=0; i--){
+      guiMenus[i].parentNode.removeChild(guiMenus[i]);
+    }
+
+    // init 3D view
+    (async () => {
+        const initResources = await init();
+        const jps3d = new JPS3D(initResources.geometryRootEl, initResources)
+      }
+    )();
+  }
+
+  playAnimation () {
+
+  }
+
+  pauseAnimation () {
+
+  }
+
+  resetPedLocation () {
 
   }
 }
