@@ -2,20 +2,24 @@ import * as PIXI from 'pixi.js';
 import * as dat from 'dat.gui/build/dat.gui.js';
 import init from '../initialization';
 import JPS3D from '../3Dvisualization/JPS3D'
+import Geometry2D from './geometry2d'
 
 class JPS2D {
   constructor (parentElement, init) {
     this.parentElement = parentElement;
     this.init = init;
 
-    this.width = window.innerWidth;
+    this.width = window.innerWidth * 0.75;
     this.height = window.innerHeight;
 
-    this.trajectory = this.init.trajectoryData;
-    this.geometry = this.init.geometryData;
+    this.trajectoryData = this.init.trajectoryData;
+    this.geometryData = this.init.geometryData;
 
     let app = new PIXI.Application({width: this.width, height: this.height});
     this.parentElement.appendChild(app.view);
+
+    app.renderer.backgroundColor = 0xF8F8FF;
+    app.renderer.autoResize = true;
 
     // Add dat gui
     this.gui = new dat.gui.GUI();
@@ -26,7 +30,13 @@ class JPS2D {
     playFolder.add({reset: () => this.resetPedLocation()}, 'reset');
     this.gui.add({Switch_To_3D: () => this.switchTo3D()}, 'Switch_To_3D');
 
+    // Add geometry
+    this.geometry = new Geometry2D(app, init.geometryData);
+    this.geometry.addRooms();
+    this.geometry.addTransitions();
+
   }
+
 
   switchTo3D () {
     // Clear 2D view

@@ -80,7 +80,7 @@ export default class JPS3D {
 		const startMs = window.performance.now();
 
 		this.parentElement = parentElement;
-		this.width = window.innerWidth
+		this.width = window.innerWidth * 0.75
 		this.height = window.innerHeight
 
 		this.init = init;
@@ -169,7 +169,6 @@ export default class JPS3D {
 					console.error( error );
 				});
 		}
-
 
 		// Add dat gui
 		this.skeletonHelpers = [];
