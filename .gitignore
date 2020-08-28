@@ -108,6 +108,7 @@ Temporary Items
 /package-lock.json
 /src/server/geometry.xml
 /src/server/trajectory.xml
-/demos/*
 /src/server/trajectory.txt
 /trajectory.json
+/src/server/N_t.dat
+/src/server/N_t.png

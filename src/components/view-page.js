@@ -43,21 +43,13 @@ class ViewPage extends React.Component {
   }
 
   // Load Three.JS after <canvas/> node is mounted into DOM
+  // Load 3D view as default
   componentDidMount(){
     (async () => {
         const initResources = await init();
         this.jps3D = new JPS3D(initResources.geometryRootEl, initResources);
       }
     )();
-  }
-
-  // Remove dat.gui menus when change pages
-  componentWillUnmount () {
-    const guiMenus = document.getElementsByClassName('dg main a');
-
-    for(let i = guiMenus.length - 1; i>=0; i--){
-      guiMenus[i].parentNode.removeChild(guiMenus[i]);
-    }
   }
 
   // Set url of state

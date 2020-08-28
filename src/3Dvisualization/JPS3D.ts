@@ -37,6 +37,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as dat from 'dat.gui/build/dat.gui.js';
+import init from '../initialization';
+import JPS2D from '../2Dvisualization/JPS2D';
 
 const AMBIENT_LIGHT_COLOR = 0x404040;
 
@@ -97,8 +99,6 @@ export default class JPS3D {
 		this.camera = new three.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
 
 		parentElement.appendChild(this.renderer.domElement);
-
-
 
 		// clock
 		this.clock = new three.Clock();
@@ -186,6 +186,7 @@ export default class JPS3D {
 		const dispFolder = this.gui.addFolder( 'Display' );
 		const playFolder = this.gui.addFolder('Play Controller')
 
+
 		const pedCtrl = dispFolder.add(this.state,'pedestrians')
 		pedCtrl.onChange(() => this.updatePedDisplay());
 		const wireframeCtrl = dispFolder.add(this.state, 'wireframe');
@@ -195,7 +196,9 @@ export default class JPS3D {
 
 		playFolder.add({play: () => this.playAnimation()}, 'play');
 		playFolder.add({pause: () => this.pauseAnimation()}, 'pause');
-		playFolder.add({reset: () => this.resetPedLocation()}, 'reset')
+		playFolder.add({reset: () => this.resetPedLocation()}, 'reset');
+		this.gui.add({Switch_To_2D: () => this.switchTo2D()}, 'Switch_To_2D');
+
 
 		// Add sky
 		addSky(this.scene);
@@ -229,6 +232,32 @@ export default class JPS3D {
 		const endMs = window.performance.now();
 
 		console.log('Initialized three.js scene in', endMs - startMs, 'ms');
+
+	}
+
+	switchTo2D () {
+
+		// Clear 3D view
+		const canvas = document.getElementsByTagName('canvas');
+
+		for(let i = canvas.length - 1; i>=0; i--){
+			canvas[i].parentNode.removeChild(canvas[i]);
+		}
+
+		// Clear dat.gui
+		const guiMenus = document.getElementsByClassName('dg main a');
+
+		for(let i = guiMenus.length - 1; i>=0; i--){
+			guiMenus[i].parentNode.removeChild(guiMenus[i]);
+		}
+
+		// init 2D view
+		(async () => {
+				const initResources = await init();
+				const jps2d = new JPS2D(initResources.geometryRootEl, initResources)
+			}
+		)();
+
 
 	}
 

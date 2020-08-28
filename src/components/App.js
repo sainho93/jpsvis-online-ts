@@ -37,7 +37,6 @@ const App = () => (
       <Switch>
         <Route exact={true} path='/' component={UploadPage}/>
         <Route path='/ViewPage' component={ViewPage}/>
-        {/*<Route path='/AnalyzePage' component={AnalyzePage}/>*/}
       </Switch>
     </div>
   </Router>
