@@ -15,20 +15,40 @@ class JPS2D {
     this.trajectoryData = this.init.trajectoryData;
     this.geometryData = this.init.geometryData;
 
-    let app = new PIXI.Application({width: this.width, height: this.height});
-    this.parentElement.appendChild(app.view);
+    this.app = new PIXI.Application({width: this.width, height: this.height});
+    this.parentElement.appendChild(this.app.view);
 
-    app.renderer.backgroundColor = 0xF8F8FF;
-    app.renderer.autoResize = true;
+    this.app.renderer.view.style.position = "absolute";
+    this.app.renderer.view.style.display = "block";
+    this.app.renderer.autoResize = true;
+    this.app.renderer.resize(this.width, this.height);
+
+    this.app.renderer.backgroundColor = 0xF8F8FF;
+
+
+    this.movelocation = {
+      offsetX: 0,
+      offsetY: 0,
+      scale: 1,
+    }
 
     // Add dat gui
     this.gui = new dat.gui.GUI();
 
     const playFolder = this.gui.addFolder('Play Controller')
-    playFolder.add({play: () => this.playAnimation()}, 'play');
-    playFolder.add({pause: () => this.pauseAnimation()}, 'pause');
-    playFolder.add({reset: () => this.resetPedLocation()}, 'reset');
-    this.gui.add({Switch_To_3D: () => this.switchTo3D()}, 'Switch_To_3D');
+    playFolder.add(this, 'playAnimation').name('Play');
+    playFolder.add(this, 'pauseAnimation').name('Pause');
+    playFolder.add(this, 'resetPedLocation').name('Reset');
+    this.gui.add(this, 'switchTo3D').name('Switch To 3D');
+
+    // const locationFoler = this.gui.addFolder('Move Geometry').listen();
+    // const offsetXController = locationFoler.add(this.movelocation, "offsetX").min(0).max(1000).step(10);
+    // locationFoler.add(this.movelocation, "offsetY").min(0).max(1000).step(10);
+    // locationFoler.add(this.movelocation, "scale").min(0).max(100).step(100);
+    //
+    // offsetXController.onChange()
+
+    this.gui.add
 
     // Add geometry
     this.geometry = new Geometry2D(app, init.geometryData);

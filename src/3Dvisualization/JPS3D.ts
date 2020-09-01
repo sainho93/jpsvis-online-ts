@@ -195,7 +195,7 @@ export default class JPS3D {
 		playFolder.add({play: () => this.playAnimation()}, 'play');
 		playFolder.add({pause: () => this.pauseAnimation()}, 'pause');
 		playFolder.add({reset: () => this.resetPedLocation()}, 'reset');
-		this.gui.add({Switch_To_2D: () => this.switchTo2D()}, 'Switch_To_2D');
+		this.gui.add(this, 'switchTo2D').name('Switch To 2D');
 
 
 		// Add sky
