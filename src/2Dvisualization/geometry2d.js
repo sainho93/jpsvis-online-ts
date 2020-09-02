@@ -1,8 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-
-
-class Geometry2d {
+class Geometry2D {
   constructor (geometryData, movelocation) {
     this.geometryData = geometryData;
     this.geometryGrapihc = new PIXI.Graphics();
@@ -43,15 +41,15 @@ class Geometry2d {
   }
 
   createLine(element, color){
-    const point1x = parseFloat(element.vertex[0].px) + this.movelocation.offsetX;
-    const point1y = parseFloat(element.vertex[0].py) + this.movelocation.offsetY;
-    const point2x = parseFloat(element.vertex[1].px) + this.movelocation.offsetX;
-    const point2y = parseFloat(element.vertex[1].py) + this.movelocation.offsetY;
+    const point1x = parseFloat(element.vertex[0].px) * this.movelocation.scale + this.movelocation.offsetX ;
+    const point1y = parseFloat(element.vertex[0].py) * this.movelocation.scale + this.movelocation.offsetY ;
+    const point2x = parseFloat(element.vertex[1].px) * this.movelocation.scale + this.movelocation.offsetX ;
+    const point2y = parseFloat(element.vertex[1].py) * this.movelocation.scale + this.movelocation.offsetY ;
 
     this.geometryGrapihc.beginFill();
     this.geometryGrapihc.lineStyle(1, color, 1);
-    this.geometryGrapihc.moveTo(point1x * this.movelocation.scale, point1y * this.movelocation.scale);
-    this.geometryGrapihc.lineTo(point2x * this.movelocation.scale, point2y * this.movelocation.scale);
+    this.geometryGrapihc.moveTo(point1x , point1y);
+    this.geometryGrapihc.lineTo(point2x, point2y);
 
     this.geometryGrapihc.endFill();
   }
@@ -62,4 +60,4 @@ class Geometry2d {
 
 }
 
-export default Geometry2d
+export default Geometry2D
