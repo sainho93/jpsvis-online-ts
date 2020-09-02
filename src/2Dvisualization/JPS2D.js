@@ -33,6 +33,7 @@ class JPS2D {
       scale: 10,
       // radius: 2,
       showPedestrian: true,
+      showCaption: false,
       // showEllipse: false,
       // showColor: false,
       playTrajectory: false,
@@ -40,12 +41,15 @@ class JPS2D {
 
     this.frame = 0;
 
+    this.endFrame = this.getEndFrame();
+
     // Add dat gui
     this.gui = new dat.gui.GUI();
 
     const displayFolder = this.gui.addFolder('Display Options');
     const pedCtrl = displayFolder.add(this.probs, 'showPedestrian').name('Pedestrian');
     pedCtrl.onChange(() => this.updatePedDisplay());
+    // displayFolder.add(this.probs, 'showCaption').name('Caption');
     // displayFolder.add(this.probs, 'showEllipse').name('Ellipse');
     // displayFolder.add(this.probs, 'showColor').name('Color');
 
@@ -95,6 +99,8 @@ class JPS2D {
 
     this.geometryContainer = new PIXI.Container();
     this.pedestrianContainer = new PIXI.Container();
+    this.informationContainer = new PIXI.Container();
+    this.app.stage.addChild(this.informationContainer);
 
     this.viewport.addChild(this.geometryContainer);
     this.viewport.addChild(this.pedestrianContainer);
@@ -103,8 +109,6 @@ class JPS2D {
     this.animate = this.animate.bind(this);
     this.animate();
   }
-
-
 
   switchTo3D () {
     // Clear 2D view
@@ -140,7 +144,7 @@ class JPS2D {
   playLastFrame(){
     this.probs.playTrajectory = false;
     if(this.frame > 0){
-      this.frame -= 1;
+      this.frame -= 8;
     }
 
     this.setFixedFrame(this.frame)
@@ -148,7 +152,7 @@ class JPS2D {
 
   playNextFrame(){
     this.probs.playTrajectory = false;
-    this.frame += 1;
+    this.frame += 8;
     this.setFixedFrame(this.frame)
   }
 
@@ -174,6 +178,10 @@ class JPS2D {
     geometry.addTransitions();
 
     this.geometryContainer.addChild(geometry.getGeometry());
+
+    // if(this.probs.showCaption){
+    //   this.geometryContainer.addChild(geometry.getCaption());
+    // }
   }
 
   updatePedLocation () {
@@ -191,6 +199,32 @@ class JPS2D {
     }
   }
 
+  updateInformation () {
+
+    if(Math.floor(this.frame/8) <= this.endFrame){
+      this.informationContainer.removeChildren();
+
+      const frameNumber = "Frame number: " + Math.floor(this.frame/8).toString();
+
+      let meassge_frame = new PIXI.Text(frameNumber);
+      meassge_frame.position.set(60,60);
+      this.informationContainer.addChild(meassge_frame);
+
+      let unEvacuatedNumber = 0;
+      for(let i=0; i<this.trajectoryData.pedestrians.length; i++){
+        const frame = Math.floor(this.frame/8);
+        if(frame>this.trajectoryData.pedestrians[i].length){
+          unEvacuatedNumber += 1;
+        }
+      }
+
+      const pedestrianNumber = "Evacuated Pedestrians number: " + unEvacuatedNumber.toString();
+      let meassage_pedestrian = new PIXI.Text(pedestrianNumber);
+      meassage_pedestrian.position.set(60, 90);
+      this.informationContainer.addChild(meassage_pedestrian);
+    }
+  }
+
   playAnimation () {
     this.probs.playTrajectory = true;
   }
@@ -203,16 +237,7 @@ class JPS2D {
     this.probs.playTrajectory = false;
     this.frame = 0;
 
-    this.setFixedFrame(this.frame)
-
-  }
-
-  moveX (value) {
-    this.probs.offsetX = value;
-  }
-
-  moveY (value) {
-    this.probs.offsetY = value;
+    this.setFixedFrame(this.frame);
   }
 
   scaleGeometry (value) {
@@ -221,11 +246,22 @@ class JPS2D {
     this.resetPedLocation();
   }
 
+  getEndFrame(){
+    let endFrames = [];
+    for(let i=0; i<this.trajectoryData.pedestrians.length; i++){
+      endFrames.push(this.trajectoryData.pedestrians[i].length)
+    }
+
+    return Math.max(...endFrames);
+
+  }
+
   animate(){
     requestAnimationFrame(this.animate);
 
     this.updateGeometry();
     this.updatePedLocation();
+    this.updateInformation();
 
     this.app.renderer.render(this.app.stage);
   }

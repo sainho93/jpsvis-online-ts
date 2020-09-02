@@ -1,15 +1,20 @@
 import * as PIXI from 'pixi.js';
 
 class Geometry2D {
-  constructor (geometryData, movelocation) {
+  constructor (geometryData, probs) {
     this.geometryData = geometryData;
     this.geometryGrapihc = new PIXI.Graphics();
+    this.captions = new PIXI.Container();
 
     this.rooms = this.geometryData.geometry.rooms;
     this.transitions = this.geometryData.geometry.transitions;
 
-    this.movelocation = movelocation;
+    this.probs = probs;
 
+    this.style = new PIXI.TextStyle({
+      fontFamily: "Arial",
+      fontSize: 1,
+    });
   }
 
   addRooms(){
@@ -27,6 +32,16 @@ class Geometry2D {
   createRoom(room){
     const polygons = room.subroom.polygon;
 
+    // create caption
+    // const name = room.subroom.caption;
+    //
+    // let caption = new PIXI.Text(name);
+    // const x = polygons[0].vertex[0].px * this.probs.scale;
+    // const y = polygons[0].vertex[0].py * this.probs.scale + 10;
+    // caption.position.set(x, y);
+    // this.captions.addChild(caption);
+
+    // create polygon
     for (let i = 0; i < polygons.length; i++){
       this.createPolygon(polygons[i])
     }
@@ -41,10 +56,10 @@ class Geometry2D {
   }
 
   createLine(element, color){
-    const point1x = parseFloat(element.vertex[0].px) * this.movelocation.scale + this.movelocation.offsetX ;
-    const point1y = parseFloat(element.vertex[0].py) * this.movelocation.scale + this.movelocation.offsetY ;
-    const point2x = parseFloat(element.vertex[1].px) * this.movelocation.scale + this.movelocation.offsetX ;
-    const point2y = parseFloat(element.vertex[1].py) * this.movelocation.scale + this.movelocation.offsetY ;
+    const point1x = parseFloat(element.vertex[0].px) * this.probs.scale + this.probs.offsetX ;
+    const point1y = parseFloat(element.vertex[0].py) * this.probs.scale + this.probs.offsetY ;
+    const point2x = parseFloat(element.vertex[1].px) * this.probs.scale + this.probs.offsetX ;
+    const point2y = parseFloat(element.vertex[1].py) * this.probs.scale + this.probs.offsetY ;
 
     this.geometryGrapihc.beginFill();
     this.geometryGrapihc.lineStyle(1, color, 1);
@@ -56,6 +71,10 @@ class Geometry2D {
 
   getGeometry() {
     return this.geometryGrapihc;
+  }
+
+  getCaption() {
+    return this.captions;
   }
 
 }
