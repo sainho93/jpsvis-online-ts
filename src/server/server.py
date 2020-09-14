@@ -176,7 +176,7 @@ async def post_file(request):
 
 def setup_server():
     app = web.Application()
-    aiohttp_debugtoolbar.setup(app)
+    # aiohttp_debugtoolbar.setup(app)
 
     # Add CORS implementation for /upload
     # `aiohttp_cors.setup` returns `aiohttp_cors.CorsConfig` instance.
@@ -220,7 +220,7 @@ async def init():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    # logging.basicConfig(level=logging.DEBUG)
     loop = asyncio.get_event_loop()
     loop.run_until_complete(init())
 
