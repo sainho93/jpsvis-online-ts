@@ -119,60 +119,36 @@ class ViewPage extends React.Component {
         label: 'N-t Diagram'
       },
       {
-        value: 'density_velocity',
-        label: 'Density - Velocity',
-        children: [
-          {
-            value: 'D_V_Method_C',
-            label: 'Method C'
-          },
-          {
-            value: 'D_V_Method_D',
-            label: 'Method D'
-          }
-        ]
+        value: 'Density_Velocity_Classic',
+        label: 'Density - Velocity (classic)',
       },
       {
-        value: 'density_flow',
-        label: 'Density - Specific flow',
-        children: [
-          {
-            value: 'D_Js_Method_C',
-            label: 'Method C'
-          },
-          {
-            value: 'D_Js_Method_D',
-            label: 'Method D'
-          }
-        ]
+        value: 'Density_Velocity_Voronoi',
+        label: 'Density - Velocity (voronoi)',
       },
       {
-        value: 'voronoi',
-        label: 'Voronoi Diagram',
-        children: [
-          {
-            value: 'density_voronoi',
-            label: 'Density',
-          },
-          {
-            value: 'velocity_voronoi',
-            label: 'Velocity'
-          }
-        ]
+        value: 'Density_Flow_Classic',
+        label: 'Density - Specific flow (classic)',
       },
       {
-        value: 'profiles',
-        label: 'Spatiotemporal Profiles',
-        children: [
-          {
-            value: 'p_density',
-            label: 'Density'
-          },
-          {
-            value: 'p_velocity',
-            label: 'Velocity'
-          }
-        ]
+        value: 'Density_Flow_Voronoi',
+        label: 'Density - Specific Flow (voronoi)',
+      },
+      {
+        value: 'Voronoi_Density',
+        label: 'Density Voronoi Diagram',
+      },
+      {
+        value: 'Voronoi_Velocity',
+        label: 'Velocity Voronoi Diagram',
+      },
+      {
+        value: 'Profiles_Density',
+        label: 'Density Spatiotemporal Profiles',
+      },
+      {
+        value: 'Profiles_Velocity',
+        label: 'Velocity Spatiotemporal Profiles',
       }
     ]
 

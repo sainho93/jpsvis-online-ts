@@ -474,8 +474,6 @@ export default class Geometry {
 			return;
 		}
 
-
-
 		// Mesh
 		const stair: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,0.01,width);
 

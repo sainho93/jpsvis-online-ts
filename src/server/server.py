@@ -35,6 +35,7 @@ import xmltodict
 import sys
 sys.path.append("..")
 from analysis import _Plot_N_t
+from analysis import SteadyState
 
 # Base directory
 PROJ_ROOT = pathlib.Path(__file__).parent.parent.parent
@@ -99,8 +100,8 @@ async def index(request):
     return web.Response(text=html, content_type='text/html', headers=NO_CACHE_HEADER)
 
 
-async def get_gait(request):
-    gait_file = 'gait.dat'
+async def get_RhoV_classic(request):
+    SteadyState.get_steady_files("rho_v_Classic.dat")
 
 
 # Handler for request "/N_t"
@@ -147,20 +148,26 @@ async def post_file(request):
             if filename.endswith('.xml'):
                 tree = ET.parse(filename)
                 root = tree.getroot()
-                if root.tag == 'geometry':
+                if root.tag == 'geometry':  # geometry file
                     os.rename(filename, 'geometry.xml')
                     text = {'res': '200'}
 
                 else:
                     os.remove(filename)
                     text = {'res': '500'}
-            elif filename.endswith('.txt'):
+            elif filename.endswith('.txt'):  # Trajectory file
                 os.rename(filename, 'trajectory.txt')
 
                 text = {'res': '200'}
-            elif filename.endswith('.dat'):
-                filetype = filename.split('_')[1]
-                if filetype == 'NT':
+            elif filename.endswith('.dat'):  # outputs file
+                namestrings = filename.split("_")
+
+                if namestrings[0] == 'rho':
+                    if namestrings[2] == 'Classic':
+                        os.rename(filename, 'rho_v_Classic.dat')
+                    elif namestrings[2] == "Voronoi":
+                        os.rename(filename, 'rho_v_Voronoi.dat')
+                elif namestrings[1] == 'NT':
                     os.rename(filename, 'N_t.dat')
 
                 text = {'res': '200'}
@@ -198,7 +205,7 @@ def setup_server():
     app.router.add_get("/ViewPage", index)
     app.router.add_get("/geometry", get_geometry)
     app.router.add_get("/trajectory", get_trajectory)
-    app.router.add_get("/gait", get_gait)
+    app.router.add_get("/Density_Velocity_Classic", get_RhoV_classic)
     app.router.add_get("/N_t", get_Nt)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
 
