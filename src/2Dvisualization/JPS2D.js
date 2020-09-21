@@ -210,18 +210,25 @@ class JPS2D {
       meassge_frame.position.set(60,60);
       this.informationContainer.addChild(meassge_frame);
 
-      let unEvacuatedNumber = 0;
+      let EvacuatedNumber = 0;
       for(let i=0; i<this.trajectoryData.pedestrians.length; i++){
         const frame = Math.floor(this.frame/8);
         if(frame>this.trajectoryData.pedestrians[i].length){
-          unEvacuatedNumber += 1;
+          EvacuatedNumber += 1;
         }
       }
 
-      const pedestrianNumber = "Evacuated Pedestrians number: " + unEvacuatedNumber.toString();
+      const pedestrianNumber = "Evacuated pedestrians number: " + EvacuatedNumber.toString();
       let meassage_pedestrian = new PIXI.Text(pedestrianNumber);
       meassage_pedestrian.position.set(60, 90);
       this.informationContainer.addChild(meassage_pedestrian);
+
+      let unEvacuatedNumber = this.trajectoryData.pedestrians.length - EvacuatedNumber;
+      const pedestrianInGeometryNumber = "In simulation pedestrians number: " + unEvacuatedNumber.toString();
+      let meassage_pedestrian_in_geometry = new PIXI.Text(pedestrianInGeometryNumber);
+      meassage_pedestrian_in_geometry.position.set(60,120);
+      this.informationContainer.addChild(meassage_pedestrian_in_geometry);
+
     }
   }
 

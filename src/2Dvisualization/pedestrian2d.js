@@ -21,7 +21,7 @@ class Pedestrian2D {
 
           const pedestrian = new PIXI.Graphics();
           pedestrian.beginFill(colorHex, 0.7);
-          pedestrian.lineStyle(1, 0x000000, 1);
+          pedestrian.lineStyle(0.5, 0x000000, 1);
 
           const x = this.trajData.pedestrians[i][this.frame].coordinate.x
             * this.probs.scale + this.probs.offsetX;
