@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
-import {colors} from './colors';
-
+import * as Rainbow from 'rainbowvis.js';
 
 class Pedestrian2D {
   constructor (trajData, probs, frame) {
@@ -16,11 +15,13 @@ class Pedestrian2D {
     for(let i=0; i<this.trajData.pedestrians.length; i++){
       if(this.frame < this.trajData.pedestrians[i].length){
         if(this.probs.showPedestrian){
-          const colorId = this.trajData.pedestrians[i][this.frame].color
-          const colorHex = '0x' + colors[colorId].hexString.split('#')[1];
+          const colorId = Math.floor(this.trajData.pedestrians[i][this.frame].color / 255 * 100);
+          const rainbow = new Rainbow();
+          const colorHex = '0x' + rainbow.colorAt(colorId);
+          console.log(colorHex)
 
           const pedestrian = new PIXI.Graphics();
-          pedestrian.beginFill(colorHex, 0.7);
+          pedestrian.beginFill(Number(colorHex), 0.7);
           pedestrian.lineStyle(0.5, 0x000000, 1);
 
           const x = this.trajData.pedestrians[i][this.frame].coordinate.x
