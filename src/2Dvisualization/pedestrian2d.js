@@ -28,11 +28,8 @@ class Pedestrian2D {
             * this.probs.scale + this.probs.offsetX;
           const y = this.trajData.pedestrians[i][this.frame].coordinate.y
             * this.probs.scale + this.probs.offsetY;
-          const major_axes = this.trajData.pedestrians[i][this.frame].axes.A
-            * this.probs.scale;
-          const minor_axes = this.trajData.pedestrians[i][this.frame].axes.B
-            * this.probs.scale;
-          const angle = this.trajData.pedestrians[i][this.frame].angle;
+          const major_axes = this.trajData.pedestrians[i][this.frame].axes.A * this.probs.scale/2
+          const minor_axes = this.trajData.pedestrians[i][this.frame].axes.B * this.probs.scale/2
 
           pedestrian.drawEllipse(x - major_axes,y - minor_axes
             , 2 * major_axes, 2 * minor_axes);
