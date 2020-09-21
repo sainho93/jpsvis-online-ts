@@ -173,7 +173,7 @@ export default class JPS3D {
 		// Add dat gui
 		this.skeletonHelpers = [];
 		this.state = {
-			pedestrians: false,
+			pedestrians: true,
 			wireframe: false,
 			skeleton: false,
 			addLights: true,
@@ -325,6 +325,8 @@ export default class JPS3D {
 					this.pedestrians[i].position.x = location.coordinate.x;
 					this.pedestrians[i].position.y = location.coordinate.z; // Y axes in trejactory = Z axes in three.JS
 					this.pedestrians[i].position.z = location.coordinate.y; // Z axes in trejactory = Y axes in three.JS
+				}else {
+					this.pedestrians[i].visible = false;
 				}
 			}
 
@@ -373,6 +375,8 @@ export default class JPS3D {
 			this.pedestrians[i].translateZ(startLocation.coordinate.y); // Y axes in trejactory = Z axes in three.JS
 			this.pedestrians[i].translateY(startLocation.coordinate.z); // Z axes in trejactory = Y axes in three.JS
 			this.pedestrians[i].rotateY(0.5 * Math.PI); // Rotation of pedestrain
+
+			this.pedestrians[i].visible = this.state.pedestrians;
 		}
 
 		this.frame = 0;

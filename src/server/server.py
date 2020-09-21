@@ -18,7 +18,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with JuPedSim. If not, see <http://www.gnu.org/licenses/>.
-import aiohttp_debugtoolbar
+# import aiohttp_debugtoolbar
 from aiohttp import web
 import aiohttp_cors
 import json
