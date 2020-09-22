@@ -25,8 +25,8 @@ class Pedestrian2D {
 
           const x = this.trajData.pedestrians[i][this.frame].coordinate.x
             * this.probs.scale + this.probs.offsetX;
-          const y = this.trajData.pedestrians[i][this.frame].coordinate.y
-            * this.probs.scale + this.probs.offsetY;
+          const y = - (this.trajData.pedestrians[i][this.frame].coordinate.y
+            * this.probs.scale + this.probs.offsetY);
           const major_axes = this.trajData.pedestrians[i][this.frame].axes.A * this.probs.scale/2;
           const minor_axes = this.trajData.pedestrians[i][this.frame].axes.B * this.probs.scale/2;
           const angle = this.trajData.pedestrians[i][this.frame].angle;

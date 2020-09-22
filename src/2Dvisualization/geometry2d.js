@@ -62,9 +62,9 @@ class Geometry2D {
 
   createLine(element, color){
     const point1x = parseFloat(element.vertex[0].px) * this.probs.scale + this.probs.offsetX ;
-    const point1y = parseFloat(element.vertex[0].py) * this.probs.scale + this.probs.offsetY ;
+    const point1y = - (parseFloat(element.vertex[0].py) * this.probs.scale + this.probs.offsetY);
     const point2x = parseFloat(element.vertex[1].px) * this.probs.scale + this.probs.offsetX ;
-    const point2y = parseFloat(element.vertex[1].py) * this.probs.scale + this.probs.offsetY ;
+    const point2y = - (parseFloat(element.vertex[1].py) * this.probs.scale + this.probs.offsetY);
 
     this.geometryGrapihc.beginFill();
     this.geometryGrapihc.lineStyle(1, color, 1);
