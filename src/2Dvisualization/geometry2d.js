@@ -24,9 +24,14 @@ class Geometry2D {
   }
 
   addTransitions(){
-    for (let i = 0; i < this.transitions.transition.length; i++){
-      this.createTransition(this.transitions.transition[i])
+    if(typeof(this.transitions.transition) !== 'object'){
+      for (let i = 0; i < this.transitions.transition.length; i++){
+        this.createTransition(this.transitions.transition[i]); // If there are more than one transitions
+      }
+    }else {
+      this.createTransition(this.transitions.transition)  // If there is only one transition
     }
+
   }
 
   createRoom(room){

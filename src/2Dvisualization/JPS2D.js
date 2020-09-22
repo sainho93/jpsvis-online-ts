@@ -31,11 +31,9 @@ class JPS2D {
       offsetX: 0,
       offsetY: 0,
       scale: 10,
-      // radius: 2,
       showPedestrian: true,
       showCaption: false,
-      // showEllipse: false,
-      // showColor: false,
+
       playTrajectory: false,
     }
 
