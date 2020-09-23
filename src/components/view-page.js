@@ -134,14 +134,6 @@ class ViewPage extends React.Component {
         value: 'Density_Flow_Voronoi',
         label: 'Density - Specific Flow (voronoi)',
       },
-      // {
-      //   value: 'Voronoi_Density',
-      //   label: 'Density Voronoi Diagram',
-      // },
-      // {
-      //   value: 'Voronoi_Velocity',
-      //   label: 'Velocity Voronoi Diagram',
-      // },
       {
         value: 'Profiles_Density',
         label: 'Density Spatiotemporal Profiles',

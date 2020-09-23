@@ -112,3 +112,7 @@ Temporary Items
 /trajectory.json
 /src/server/N_t.dat
 /src/server/N_t.png
+/src/server/IFD.dat
+/src/server/rho_v_Classic.dat
+/src/analysis/profile_density.png
+/src/analysis/profile_velocity.png
