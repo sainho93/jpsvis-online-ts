@@ -119,20 +119,20 @@ class ViewPage extends React.Component {
         label: 'N-t Diagram'
       },
       {
-        value: 'Density_Velocity_Classic',
-        label: 'Density - Velocity (classic)',
+        value: 'Density_Time',
+        label: 'Density - Time',
       },
       {
-        value: 'Density_Velocity_Voronoi',
-        label: 'Density - Velocity (voronoi)',
+        value: 'Velocity_Time',
+        label: 'Velocity - Time',
       },
       {
-        value: 'Density_Flow_Classic',
-        label: 'Density - Specific Flow (classic)',
+        value: 'Density_Velocity',
+        label: 'Density - Velocity ',
       },
       {
-        value: 'Density_Flow_Voronoi',
-        label: 'Density - Specific Flow (voronoi)',
+        value: 'Density_Flow',
+        label: 'Density - Specific Flow',
       },
       {
         value: 'Profiles_Density',

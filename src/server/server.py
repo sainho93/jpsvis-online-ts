@@ -35,8 +35,8 @@ import sys
 
 sys.path.append("..")
 from analysis import _Plot_N_t
-from analysis import SteadyState
 from analysis import plot_profiles
+from analysis import plot_FD
 
 # Base directory
 PROJ_ROOT = pathlib.Path(__file__).parent.parent.parent
@@ -100,10 +100,6 @@ async def index(request):
     return web.Response(text=html, content_type='text/html', headers=NO_CACHE_HEADER)
 
 
-async def get_RhoV_classic(request):
-    SteadyState.get_steady_files("rho_v_Classic.dat")
-
-
 # Handler for request "/N_t"
 async def get_Nt(request):
     nt_file = 'N_t.dat'
@@ -135,6 +131,26 @@ async def get_profile_velocity(request):
         plot_profiles.plot_profiles(geofile, trafile, IFDfile)
 
     with open("profile_velocity.png", "rb") as img_f:
+        return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
+
+
+async def get_density_frame(request):
+    rho_v_file = 'rho_v.dat'
+
+    if not os.path.exists("density_frame.png"):
+        plot_FD.plot_density_frame(rho_v_file)
+
+    with open("density_frame.png", "rb") as img_f:
+        return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
+
+
+async def get_velocity_frame(request):
+    rho_v_file = 'rho_v.dat'
+
+    if not os.path.exists("velocity_frame.png"):
+        plot_FD.plot_velocity_frame(rho_v_file)
+
+    with open("velocity_frame.png", "rb") as img_f:
         return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
 
 
@@ -188,10 +204,8 @@ async def post_file(request):
                 namestrings = filename.split("_")
 
                 if namestrings[0] == 'rho':
-                    if namestrings[2] == 'Classic':
-                        os.rename(filename, 'rho_v_Classic.dat')
-                    elif namestrings[2] == "Voronoi":
-                        os.rename(filename, 'rho_v_Voronoi.dat')
+                    if namestrings[1] == 'v':
+                        os.rename(filename, 'rho_v.dat')
                 elif namestrings[1] == 'NT':
                     os.rename(filename, 'N_t.dat')
                 elif namestrings[0] == 'IFD':
@@ -232,10 +246,11 @@ def setup_server():
     app.router.add_get("/ViewPage", index)
     app.router.add_get("/geometry", get_geometry)
     app.router.add_get("/trajectory", get_trajectory)
-    app.router.add_get("/Density_Velocity_Classic", get_RhoV_classic)
     app.router.add_get("/N_t", get_Nt)
     app.router.add_get("/Profiles_Density", get_profile_density)
     app.router.add_get("/Profiles_Velocity", get_profile_velocity)
+    app.router.add_get("/Density_Time", get_density_frame)
+    app.router.add_get("/Velocity_Time", get_velocity_frame)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
 
     return app
