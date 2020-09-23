@@ -179,7 +179,7 @@ export default class Geometry {
 		const width  = Math.abs(maxY - minY);
 
 		const ground = new three.BoxBufferGeometry(length, 0.01, width);
-		ground.translate((maxX + minX)/2, 0, (maxY + minY)/2);
+		ground.translate((maxX + minX)/2, 0, -(maxY + minY)/2); // Revolve y axes
 
 		return ground;
 	}
@@ -264,7 +264,7 @@ export default class Geometry {
 				elevation = parseFloat(this.rooms.room.subroom.C_z);
 			}
 
-			exit.translate((point1.x + point2.x)/2, elevation+0.5, (point1.y + point2.y)/2);
+			exit.translate((point1.x + point2.x)/2, elevation+0.5, -(point1.y + point2.y)/2); // Revolve y axes
 			return exit;
 		}
 	}
@@ -344,7 +344,7 @@ export default class Geometry {
 
 				const track: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,0.2,0.1);
 				track.rotateY(angle);
-				track.translate((point1.x + point2.x)/2, 0.5, (point1.y + point2.y)/2);
+				track.translate((point1.x + point2.x)/2, 0.5, - (point1.y + point2.y)/2); // Revolve y axes
 
 				tracks.push(track);
 			}
@@ -376,7 +376,7 @@ export default class Geometry {
 			const angle = - Math.atan2(point1.y - point2.y, point1.x - point2.x);
 			const wall: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.1);
 			wall.rotateY(angle);
-			wall.translate((point1.x + point2.x)/2, 0.5, (point1.y + point2.y)/2);
+			wall.translate((point1.x + point2.x)/2, 0.5, - (point1.y + point2.y)/2); // Revolve y axes
 
 			return wall;
 		}
@@ -480,7 +480,7 @@ export default class Geometry {
 		stair.rotateZ(angleZ);
 		stair.rotateY(angleY);
 
-		stair.translate(center.x, (elevationUp + elevationDown)/2, center.y);
+		stair.translate(center.x, (elevationUp + elevationDown)/2, -center.y);  // Revolve y axes
 
 		return stair;
 	}
