@@ -154,6 +154,26 @@ async def get_velocity_frame(request):
         return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
 
 
+async def get_density_velocity(request):
+    rho_v_file = 'rho_v.dat'
+
+    if not os.path.exists("density_velocity.png"):
+        plot_FD.plot_density_velocity(rho_v_file)
+
+    with open("density_velocity.png", "rb") as img_f:
+        return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
+
+
+async def get_density_J(request):
+    rho_v_file = 'rho_v.dat'
+
+    if not os.path.exists("density_J.png"):
+        plot_FD.plot_density_J(rho_v_file)
+
+    with open("density_J.png", "rb") as img_f:
+        return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
+
+
 async def get_geometry(request):
     geo_file = 'geometry.xml'
     return web.Response(text=json.dumps(parse_geometry_file(geo_file), ensure_ascii=False))
@@ -251,6 +271,8 @@ def setup_server():
     app.router.add_get("/Profiles_Velocity", get_profile_velocity)
     app.router.add_get("/Density_Time", get_density_frame)
     app.router.add_get("/Velocity_Time", get_velocity_frame)
+    app.router.add_get("/Density_Velocity", get_density_velocity)
+    app.router.add_get("/Density_Flow", get_density_J)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
 
     return app

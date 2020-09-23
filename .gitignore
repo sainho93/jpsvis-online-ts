@@ -116,3 +116,11 @@ Temporary Items
 /src/server/rho_v_Classic.dat
 /src/analysis/profile_density.png
 /src/analysis/profile_velocity.png
+/src/server/rho_v.dat
+/src/server/velocity_frame.png
+/src/server/profile_velocity.png
+/src/server/profile_density.png
+/src/server/N_t.png
+/src/server/density_velocity.png
+/src/server/density_J.png
+/src/server/density_frame.png
