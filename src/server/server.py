@@ -29,13 +29,14 @@ import base64
 import os
 from numpy import *
 
-
 from xml.etree import ElementTree as ET
 import xmltodict
 import sys
+
 sys.path.append("..")
 from analysis import _Plot_N_t
 from analysis import SteadyState
+from analysis import plot_profiles
 
 # Base directory
 PROJ_ROOT = pathlib.Path(__file__).parent.parent.parent
@@ -63,8 +64,8 @@ def parse_trajectory_file(filepath):
                     if line.startswith('#') is False and line != '':
                         line = line.split('\t')
                         id = int(line[0])
-                        if id < len(trajectory['pedestrians'])+1:
-                            trajectory['pedestrians'][id-1].append(parse_pedestrian(line))
+                        if id < len(trajectory['pedestrians']) + 1:
+                            trajectory['pedestrians'][id - 1].append(parse_pedestrian(line))
                         else:
                             trajectory['pedestrians'].append([parse_pedestrian(line)])
 
@@ -75,7 +76,6 @@ def parse_trajectory_file(filepath):
 
 
 def parse_pedestrian(dataline):
-
     x = float(dataline[2])
     y = float(dataline[3])
     z = float(dataline[4])
@@ -110,6 +110,31 @@ async def get_Nt(request):
     _Plot_N_t.plot_Nt(nt_file)
 
     with open("N_t.png", "rb") as img_f:
+        return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
+
+
+# Handler for request "/Profiles_Density"
+async def get_profile_density(request):
+    geofile = 'geometry.xml'
+    trafile = 'trajectory.txt'
+    IFDfile = 'IFD.dat'
+
+    if not os.path.exists("profile_density.png"):
+        plot_profiles.plot_profiles(geofile, trafile, IFDfile)
+
+    with open("profile_density.png", "rb") as img_f:
+        return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
+
+
+async def get_profile_velocity(request):
+    geofile = 'geometry.xml'
+    trafile = 'trajectory.txt'
+    IFDfile = 'IFD.dat'
+
+    if not os.path.exists("profile_velocity.png"):
+        plot_profiles.plot_profiles(geofile, trafile, IFDfile)
+
+    with open("profile_velocity.png", "rb") as img_f:
         return web.Response(text=base64.b64encode(img_f.read()).decode('utf-8'))
 
 
@@ -169,6 +194,8 @@ async def post_file(request):
                         os.rename(filename, 'rho_v_Voronoi.dat')
                 elif namestrings[1] == 'NT':
                     os.rename(filename, 'N_t.dat')
+                elif namestrings[0] == 'IFD':
+                    os.rename(filename, 'IFD.dat')
 
                 text = {'res': '200'}
             else:
@@ -207,6 +234,8 @@ def setup_server():
     app.router.add_get("/trajectory", get_trajectory)
     app.router.add_get("/Density_Velocity_Classic", get_RhoV_classic)
     app.router.add_get("/N_t", get_Nt)
+    app.router.add_get("/Profiles_Density", get_profile_density)
+    app.router.add_get("/Profiles_Velocity", get_profile_velocity)
     app.router.add_static('/', path=str(PROJ_ROOT / 'static'))
 
     return app

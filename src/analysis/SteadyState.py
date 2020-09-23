@@ -375,7 +375,7 @@ def get_steady_files(file):
     except IOError:
         exit("Can not open file <%s>" % input_file)
 
-    data = data[data[:, 1] != 0] # todo: why?
+    data = data[data[:, 1] != 0]
     if args.automatic:
         ref_start = []
         ref_end = []
