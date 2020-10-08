@@ -20,6 +20,7 @@ class Pedestrian2D {
           const colorHex = '0x' + rainbow.colorAt(colorId);
 
           const pedestrian = new PIXI.Graphics();
+
           pedestrian.beginFill(Number(colorHex), 0.7);
           pedestrian.lineStyle(0.5, 0x000000, 1);
 
@@ -30,13 +31,18 @@ class Pedestrian2D {
           const major_axes = this.trajData.pedestrians[i][this.frame].axes.A * this.probs.scale/2;
           const minor_axes = this.trajData.pedestrians[i][this.frame].axes.B * this.probs.scale/2;
           const angle = this.trajData.pedestrians[i][this.frame].angle;
-          //TODO: Fix angle
 
+          pedestrian.drawEllipse(0,0,2 * major_axes, 2 * minor_axes);
 
-          pedestrian.drawEllipse(x - major_axes,y - minor_axes
-            , 2 * major_axes, 2 * minor_axes);
+          pedestrian.angle = - angle;
+
+          pedestrian.x = x - major_axes;
+          pedestrian.y = y - minor_axes;
+
 
           pedestrian.endFill();
+
+
           this.pedestrians.addChild(pedestrian);
         }
       }
