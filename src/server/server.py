@@ -76,6 +76,7 @@ def parse_trajectory_file(filepath):
 
 
 def parse_pedestrian(dataline):
+    id = dataline[0]
     x = float(dataline[2])
     y = float(dataline[3])
     z = float(dataline[4])
@@ -89,6 +90,7 @@ def parse_pedestrian(dataline):
         'axes': {'A': a, 'B': b},
         'angle': angle,
         'color': color,
+        'id': id
     }
 
     return location

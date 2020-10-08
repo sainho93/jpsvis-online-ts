@@ -38,19 +38,24 @@ class Geometry2D {
     const polygons = room.subroom.polygon;
 
     // create caption
-    // const name = room.subroom.caption;
-    //
-    // let caption = new PIXI.Text(name);
-    // const x = polygons[0].vertex[0].px * this.probs.scale;
-    // const y = polygons[0].vertex[0].py * this.probs.scale + 10;
-    // caption.position.set(x, y);
-    // this.captions.addChild(caption);
+    if(this.probs.showCaption){
+      const name = room.subroom.caption;
+
+      let caption = new PIXI.Text(name);
+      caption.style = {fontSize: "12"};
+      const x = polygons[0].vertex[0].px * this.probs.scale;
+      const y = - polygons[0].vertex[0].py * this.probs.scale;
+      caption.position.set(x, y);
+      this.captions.addChild(caption);
+    }
+
 
     // create polygon
     for (let i = 0; i < polygons.length; i++){
       this.createPolygon(polygons[i])
     }
   }
+
 
   createTransition(transition){
     this.createLine(transition, 0x2CAEBE)

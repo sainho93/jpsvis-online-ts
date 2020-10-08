@@ -9,6 +9,8 @@ class Pedestrian2D {
 
     this.pedestrians = new PIXI.Container();
 
+    this.IDs = new PIXI.Container();
+
   }
 
   addPedestrians(){
@@ -39,11 +41,29 @@ class Pedestrian2D {
           pedestrian.x = x - major_axes;
           pedestrian.y = y - minor_axes;
 
-
           pedestrian.endFill();
 
-
           this.pedestrians.addChild(pedestrian);
+        }
+      }
+    }
+  }
+
+  addIDs(){
+    for(let i=0; i<this.trajData.pedestrians.length; i++){
+      if(this.frame < this.trajData.pedestrians[i].length){
+        if(this.probs.showID){
+          const x = this.trajData.pedestrians[i][this.frame].coordinate.x
+            * this.probs.scale + this.probs.offsetX;
+          const y = - (this.trajData.pedestrians[i][this.frame].coordinate.y
+            * this.probs.scale + this.probs.offsetY);
+          const minor_axes = this.trajData.pedestrians[i][this.frame].axes.B * this.probs.scale/2;
+
+          let ID = new PIXI.Text(this.trajData.pedestrians[i][this.frame].id)
+          ID.position.set(x,y);
+          ID.style = {fontSize: "4"};
+
+          this.IDs.addChild(ID);
         }
       }
     }
@@ -52,6 +72,10 @@ class Pedestrian2D {
 
   getPedestrian(){
     return this.pedestrians;
+  }
+
+  getIDs(){
+    return this.IDs
   }
 }
 
