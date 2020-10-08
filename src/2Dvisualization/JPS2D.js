@@ -184,6 +184,7 @@ class JPS2D {
 
   updatePedLocation () {
     if(this.probs.playTrajectory && this.probs.showPedestrian){
+
       this.pedestrianContainer.removeChildren();
 
       const pedestrians = new Pedestrian2D(this.trajectoryData, this.probs
@@ -198,17 +199,19 @@ class JPS2D {
   }
 
   updateInformation () {
+    this.informationContainer.removeChildren();
+
+    let EvacuatedNumber = 0;
+    let unEvacuatedNumber = 0;
+
+    let frameNumber;
+    let pedestrianNumber;
 
     if(Math.floor(this.frame/8) <= this.endFrame){
-      this.informationContainer.removeChildren();
 
-      const frameNumber = "Frame number: " + Math.floor(this.frame/8).toString();
 
-      let meassge_frame = new PIXI.Text(frameNumber);
-      meassge_frame.position.set(60,60);
-      this.informationContainer.addChild(meassge_frame);
+      frameNumber = "Frame number: " + Math.floor(this.frame/8).toString();
 
-      let EvacuatedNumber = 0;
       for(let i=0; i<this.trajectoryData.pedestrians.length; i++){
         const frame = Math.floor(this.frame/8);
         if(frame>this.trajectoryData.pedestrians[i].length){
@@ -216,18 +219,33 @@ class JPS2D {
         }
       }
 
-      const pedestrianNumber = "Evacuated pedestrians number: " + EvacuatedNumber.toString();
-      let meassage_pedestrian = new PIXI.Text(pedestrianNumber);
-      meassage_pedestrian.position.set(60, 90);
-      this.informationContainer.addChild(meassage_pedestrian);
+      unEvacuatedNumber = this.trajectoryData.pedestrians.length - EvacuatedNumber;
 
-      let unEvacuatedNumber = this.trajectoryData.pedestrians.length - EvacuatedNumber;
-      const pedestrianInGeometryNumber = "In simulation pedestrians number: " + unEvacuatedNumber.toString();
-      let meassage_pedestrian_in_geometry = new PIXI.Text(pedestrianInGeometryNumber);
-      meassage_pedestrian_in_geometry.position.set(60,120);
-      this.informationContainer.addChild(meassage_pedestrian_in_geometry);
 
+    }else {
+      this.informationContainer.removeChildren();
+
+      frameNumber = "Frame number: " + Math.floor(this.endFrame).toString();
+      EvacuatedNumber = this.trajectoryData.pedestrians.length;
+
+      this.probs.playTrajectory = false; // Stop playing when all pedestrians evacuated
     }
+
+    let meassge_frame = new PIXI.Text(frameNumber);
+    meassge_frame.position.set(60,60);
+    this.informationContainer.addChild(meassge_frame);
+
+    pedestrianNumber = "Evacuated pedestrians number: " + EvacuatedNumber.toString();
+    let meassage_pedestrian = new PIXI.Text(pedestrianNumber);
+    meassage_pedestrian.position.set(60, 90);
+    this.informationContainer.addChild(meassage_pedestrian);
+
+    const pedestrianInGeometryNumber = "In simulation pedestrians number: " + unEvacuatedNumber.toString();
+    let meassage_pedestrian_in_geometry = new PIXI.Text(pedestrianInGeometryNumber);
+    meassage_pedestrian_in_geometry.position.set(60,120);
+    this.informationContainer.addChild(meassage_pedestrian_in_geometry);
+
+
   }
 
   playAnimation () {
