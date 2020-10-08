@@ -96,16 +96,27 @@ class JPS2D {
     this.app.stage.addChild(this.viewport);
 
     this.geometryContainer = new PIXI.Container();
+    const geometry = new Geometry2D(this.geometryData, this.probs);
+
+    geometry.addRooms();
+    geometry.addTransitions();
+
+    this.geometryContainer.addChild(geometry.getGeometry());
+
     this.pedestrianContainer = new PIXI.Container();
     this.informationContainer = new PIXI.Container();
     this.app.stage.addChild(this.informationContainer);
 
+
     this.viewport.addChild(this.geometryContainer);
     this.viewport.addChild(this.pedestrianContainer);
+
     this.setFixedFrame(0); // Default show pedestrians
 
     this.animate = this.animate.bind(this);
     this.animate();
+
+    this.app.renderer.render(this.app.stage);
   }
 
   switchTo3D () {
@@ -165,21 +176,6 @@ class JPS2D {
 
       this.pedestrianContainer.addChild(pedestrians.getPedestrian());
     }
-  }
-
-  updateGeometry(){
-    this.geometryContainer.removeChildren();
-
-    const geometry = new Geometry2D(this.geometryData, this.probs);
-
-    geometry.addRooms();
-    geometry.addTransitions();
-
-    this.geometryContainer.addChild(geometry.getGeometry());
-
-    // if(this.probs.showCaption){
-    //   this.geometryContainer.addChild(geometry.getCaption());
-    // }
   }
 
   updatePedLocation () {
@@ -282,11 +278,9 @@ class JPS2D {
   animate(){
     requestAnimationFrame(this.animate);
 
-    this.updateGeometry();
     this.updatePedLocation();
     this.updateInformation();
 
-    this.app.renderer.render(this.app.stage);
   }
 }
 
