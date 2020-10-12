@@ -75,6 +75,7 @@ export default class JPS3D {
 	private state: state;
 	private skeletonHelpers: three.SkeletonHelper[];
 	private walkingClip: three.AnimationClip;
+	private jps2d: JPS2D;
 
 	constructor (parentElement: HTMLElement, init: InitResources) {
 		const startMs = window.performance.now();
@@ -234,6 +235,8 @@ export default class JPS3D {
 	}
 
 	switchTo2D () {
+		const myReq = requestAnimationFrame(this.animate);
+		cancelAnimationFrame(myReq);
 
 		// Clear 3D view
 		const canvas = document.getElementsByTagName('canvas');
@@ -252,10 +255,9 @@ export default class JPS3D {
 		// init 2D view
 		(async () => {
 				const initResources = await init();
-				const jps2d = new JPS2D(initResources.geometryRootEl, initResources)
+				this.jps2d = new JPS2D(initResources.geometryRootEl, initResources)
 			}
 		)();
-
 
 	}
 

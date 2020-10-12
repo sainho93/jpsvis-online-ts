@@ -24,7 +24,7 @@ class Geometry2D {
   }
 
   addTransitions(){
-    if(typeof(this.transitions.transition) !== 'object'){
+    if(this.transitions.transition.length > 1){
       for (let i = 0; i < this.transitions.transition.length; i++){
         this.createTransition(this.transitions.transition[i]); // If there are more than one transitions
       }

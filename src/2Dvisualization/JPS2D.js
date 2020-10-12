@@ -113,7 +113,7 @@ class JPS2D {
 
     this.setFixedFrame(0); // Default show pedestrians
 
-    this.updateGeo();
+
 
     this.animate = this.animate.bind(this);
     this.animate();
@@ -138,6 +138,9 @@ class JPS2D {
     }
 
     // init 3D view
+    const myReq = requestAnimationFrame(this.animate);
+    cancelAnimationFrame(myReq);
+
     (async () => {
         const initResources = await init();
         const jps3d = new JPS3D(initResources.geometryRootEl, initResources)
@@ -262,7 +265,6 @@ class JPS2D {
     meassage_pedestrian_in_geometry.position.set(60,120);
     this.informationContainer.addChild(meassage_pedestrian_in_geometry);
 
-
   }
 
   playAnimation () {
@@ -301,6 +303,7 @@ class JPS2D {
 
     this.updatePed();
     this.updateInformation();
+    this.updateGeo();
   }
 }
 
