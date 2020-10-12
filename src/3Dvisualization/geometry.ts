@@ -242,7 +242,7 @@ export default class Geometry {
 			const angle = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
 
 			const exit: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.05);
-			exit.rotateY(angle);
+			exit.rotateY(-angle);
 
 
 			// Elevation
@@ -343,7 +343,7 @@ export default class Geometry {
 				const angle = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
 
 				const track: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,0.2,0.1);
-				track.rotateY(angle);
+				track.rotateY(-angle);
 				track.translate((point1.x + point2.x)/2, 0.5, - (point1.y + point2.y)/2); // Revolve y axes
 
 				tracks.push(track);
@@ -375,7 +375,7 @@ export default class Geometry {
 			// const angle = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
 			const angle = - Math.atan2(point1.y - point2.y, point1.x - point2.x);
 			const wall: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.1);
-			wall.rotateY(angle);
+			wall.rotateY(-angle);
 			wall.translate((point1.x + point2.x)/2, 0.5, - (point1.y + point2.y)/2); // Revolve y axes
 
 			return wall;
@@ -477,7 +477,7 @@ export default class Geometry {
 		// Mesh
 		const stair: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,0.01,width);
 
-		stair.rotateZ(angleZ);
+		stair.rotateZ(-angleZ);
 		stair.rotateY(angleY);
 
 		stair.translate(center.x, (elevationUp + elevationDown)/2, -center.y);  // Revolve y axes
