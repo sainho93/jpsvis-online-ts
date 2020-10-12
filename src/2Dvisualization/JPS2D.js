@@ -113,8 +113,11 @@ class JPS2D {
 
     this.setFixedFrame(0); // Default show pedestrians
 
+    this.updateGeo();
+
     this.animate = this.animate.bind(this);
     this.animate();
+
 
     this.app.renderer.render(this.app.stage);
   }
@@ -298,8 +301,6 @@ class JPS2D {
 
     this.updatePed();
     this.updateInformation();
-    this.updateGeo();
-
   }
 }
 

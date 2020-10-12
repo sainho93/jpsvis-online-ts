@@ -208,23 +208,32 @@ async def post_file(request):
 
             # Identify the file format
             # Rename according to the file format
+            namestrings = filename.split("_")
+
             if filename.endswith('.xml'):
                 tree = ET.parse(filename)
                 root = tree.getroot()
+
                 if root.tag == 'geometry':  # geometry file
                     os.rename(filename, 'geometry.xml')
+                    text = {'res': '200'}
+                elif root.tag == 'JPSreport':  # JPSreport ini file
+                    os.rename(filename, 'JPSreport_ini.xml')
                     text = {'res': '200'}
 
                 else:
                     os.remove(filename)
                     text = {'res': '500'}
             elif filename.endswith('.txt'):  # Trajectory file
-                os.rename(filename, 'trajectory.txt')
+                with open(filename, 'r') as f:
+                    firstline = f.readline()
+                    if firstline.startswith('#description'):
+                        os.rename(filename, 'trajectory.txt')
+                    elif firstline.startswith('#Simulation'):
+                        os.rename(filename, 'flow_{id}.txt'.format(id=namestrings[3]))
 
                 text = {'res': '200'}
             elif filename.endswith('.dat'):  # outputs file
-                namestrings = filename.split("_")
-
                 if namestrings[0] == 'rho':
                     if namestrings[1] == 'v':
                         os.rename(filename, 'rho_v.dat')
