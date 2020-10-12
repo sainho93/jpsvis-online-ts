@@ -47,7 +47,7 @@ class ViewPage extends React.Component {
   componentDidMount(){
     (async () => {
         const initResources = await init();
-        this.jps3D = new JPS3D(initResources.geometryRootEl, initResources);
+        const jps3D = new JPS3D(initResources.geometryRootEl, initResources);
       }
     )();
   }

@@ -18,6 +18,13 @@ class JPS2D {
     this.geometryData = this.init.geometryData;
 
     this.app = new PIXI.Application({width: this.width, height: this.height});
+
+
+    this.app.view.addEventListener("webglcontextlost", (e) => {
+      e.preventDefault();  // allows the context to be restored
+
+    });
+
     this.parentElement.appendChild(this.app.view);
 
     this.app.renderer.view.style.position = "absolute";
@@ -109,7 +116,7 @@ class JPS2D {
     this.animate = this.animate.bind(this);
     this.animate();
 
-    // this.app.renderer.render(this.app.stage);
+    this.app.renderer.render(this.app.stage);
   }
 
   switchTo3D () {
