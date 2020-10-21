@@ -14,8 +14,16 @@ Visualization and analysis of geometry and trajectory data from [JuPedSim](https
 
 ## Background
 ### Motivation
+During the evacuation ,there is high potential safety risks where pedestrian density is high. Therefore, there is demand 
+for pedestrian dynamic simulation tools to identify various evacuation scenarios. The current computing simulation 
+software was developed with desktop systems in mind, however the web technology has evolved sufficiently to enable 
+the development of professional software. The JPSvis Online is the web-based visualization and analysis tool as a part of 
+[JuPedSim](https://www.jupedsim.org/index.html).
 
 ### Objective
+* Visualization of geometry in 2D and 3D view
+* Visualisation of trajectory files to present the evacuation process
+* Plot diagrams from output files of JPSreport 
 
 ## Installation
 
@@ -52,6 +60,9 @@ Then run the server:
     python ./src/server/server.py
     
 Visit http://localhost:8080/ to use JPSvis Online
+
+## Known issues:
+
 
 ## Maintainers
 

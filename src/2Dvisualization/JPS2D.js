@@ -19,6 +19,7 @@ class JPS2D {
 
     this.app = new PIXI.Application({width: this.width, height: this.height});
 
+    const gl = this.app.view.getContext("webgl2");
 
     this.app.view.addEventListener("webglcontextlost", (e) => {
       e.preventDefault();  // allows the context to be restored
@@ -55,8 +56,8 @@ class JPS2D {
     const displayFolder = this.gui.addFolder('Display Options');
     const pedCtrl = displayFolder.add(this.probs, 'showPedestrian').name('Pedestrian');
     pedCtrl.onChange(() => this.updatePedDisplay());
-    displayFolder.add(this.probs, 'showID').name('ID');
-    displayFolder.add(this.probs, 'showCaption').name('Caption');
+    // displayFolder.add(this.probs, 'showID').name('ID');
+    // displayFolder.add(this.probs, 'showCaption').name('Caption');
 
     const playFolder = this.gui.addFolder('Play Options');
     playFolder.add(this, 'playAnimation').name('Play');
@@ -102,6 +103,10 @@ class JPS2D {
 
 
     this.geometryContainer = new PIXI.Container();
+
+    this.geometry = new Geometry2D(this.geometryData, this.probs);
+    this.geometryContainer.addChild(this.geometry.getGeometry());
+
     this.pedestrianContainer = new PIXI.Container();
     this.informationContainer = new PIXI.Container();
 
@@ -113,11 +118,8 @@ class JPS2D {
 
     this.setFixedFrame(0); // Default show pedestrians
 
-
-
     this.animate = this.animate.bind(this);
     this.animate();
-
 
     this.app.renderer.render(this.app.stage);
   }
@@ -150,7 +152,8 @@ class JPS2D {
 
   updatePedDisplay(){
     if(this.probs.showPedestrian === false){
-      this.pedestrianContainer.removeChildren();
+      const oldPeds = this.pedestrianContainer.removeChildren();
+      oldPeds.forEach(element => element.destroy());
     }else {
       this.resetPedLocation();
     }
@@ -173,7 +176,8 @@ class JPS2D {
 
   setFixedFrame(frame){
     if(this.probs.showPedestrian){
-      this.pedestrianContainer.removeChildren();
+      const oldPeds = this.pedestrianContainer.removeChildren();
+      oldPeds.forEach(element => element.destroy());
 
       const pedestrians = new Pedestrian2D(this.trajectoryData, this.probs
         ,frame);
@@ -187,7 +191,8 @@ class JPS2D {
   updatePed () {
     if(this.probs.playTrajectory && this.probs.showPedestrian){
 
-      this.pedestrianContainer.removeChildren();
+      const oldPeds = this.pedestrianContainer.removeChildren();
+      oldPeds.forEach(element => element.destroy());
 
       const pedestrians = new Pedestrian2D(this.trajectoryData, this.probs,this.frame);
 
@@ -197,29 +202,22 @@ class JPS2D {
       if(this.probs.showID){
         pedestrians.addIDs();
         this.pedestrianContainer.addChild(pedestrians.getIDs());
+        console.log(pedestrians.getIDs().children.length)
       }
 
       this.frame += 1;
     }
   }
 
-  updateGeo () {
-    this.geometryContainer.removeChildren();
-
-    const geometry = new Geometry2D(this.geometryData, this.probs);
-
-    geometry.addRooms();
-    geometry.addTransitions();
-
-    this.geometryContainer.addChild(geometry.getGeometry());
-
+  updateCaption () {
     if(this.probs.showCaption){
-      this.geometryContainer.addChild(geometry.getCaption());
+      this.geometryContainer.addChild(this.geometry.getCaption());
     }
   }
 
   updateInformation () {
-    this.informationContainer.removeChildren();
+    const oldInfo = this.informationContainer.removeChildren();
+    oldInfo.forEach(element => element.destroy());
 
     let EvacuatedNumber = 0;
     let unEvacuatedNumber = 0;
@@ -240,10 +238,7 @@ class JPS2D {
 
       unEvacuatedNumber = this.trajectoryData.pedestrians.length - EvacuatedNumber;
 
-
-
     }else {
-      this.informationContainer.removeChildren();
 
       frameNumber = "Frame number: " + Math.floor(this.endFrame).toString();
       EvacuatedNumber = this.trajectoryData.pedestrians.length;
@@ -303,7 +298,7 @@ class JPS2D {
 
     this.updatePed();
     this.updateInformation();
-    this.updateGeo();
+    // this.updateGeo();
   }
 }
 

@@ -242,7 +242,7 @@ export default class Geometry {
 			const angle = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
 
 			const exit: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,1,0.05);
-			exit.rotateY(-angle);
+			exit.rotateY(angle);
 
 
 			// Elevation

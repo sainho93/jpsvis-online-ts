@@ -15,6 +15,9 @@ class Geometry2D {
       fontFamily: "Arial",
       fontSize: 1,
     });
+
+    this.addRooms();
+    this.addTransitions();
   }
 
   addRooms(){
