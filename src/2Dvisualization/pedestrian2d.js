@@ -11,6 +11,13 @@ class Pedestrian2D {
 
     this.IDs = new PIXI.Container();
 
+    this.style = new PIXI.TextStyle({
+      fontFamily: "Arial",
+      fontSize: 1,
+    });
+    this.addPedestrians();
+
+
   }
 
   addPedestrians(){
@@ -57,7 +64,6 @@ class Pedestrian2D {
             * this.probs.scale + this.probs.offsetX;
           const y = - (this.trajData.pedestrians[i][this.frame].coordinate.y
             * this.probs.scale + this.probs.offsetY);
-          const minor_axes = this.trajData.pedestrians[i][this.frame].axes.B * this.probs.scale/2;
 
           let ID = new PIXI.Text(this.trajData.pedestrians[i][this.frame].id)
           ID.position.set(x,y);

@@ -56,7 +56,7 @@ class JPS2D {
     const displayFolder = this.gui.addFolder('Display Options');
     const pedCtrl = displayFolder.add(this.probs, 'showPedestrian').name('Pedestrian');
     pedCtrl.onChange(() => this.updatePedDisplay());
-    // displayFolder.add(this.probs, 'showID').name('ID');
+    displayFolder.add(this.probs, 'showID').name('ID');
     // displayFolder.add(this.probs, 'showCaption').name('Caption');
 
     const playFolder = this.gui.addFolder('Play Options');
@@ -194,15 +194,15 @@ class JPS2D {
       const oldPeds = this.pedestrianContainer.removeChildren();
       oldPeds.forEach(element => element.destroy());
 
-      const pedestrians = new Pedestrian2D(this.trajectoryData, this.probs,this.frame);
+      const pedestrians = new Pedestrian2D(this.trajectoryData, this.probs, this.frame);
 
-      pedestrians.addPedestrians();
       this.pedestrianContainer.addChild(pedestrians.getPedestrian());
 
       if(this.probs.showID){
+        this.pauseAnimation();
+
         pedestrians.addIDs();
         this.pedestrianContainer.addChild(pedestrians.getIDs());
-        console.log(pedestrians.getIDs().children.length)
       }
 
       this.frame += 1;
@@ -264,6 +264,7 @@ class JPS2D {
 
   playAnimation () {
     this.probs.playTrajectory = true;
+
   }
 
   pauseAnimation () {
@@ -298,7 +299,7 @@ class JPS2D {
 
     this.updatePed();
     this.updateInformation();
-    // this.updateGeo();
+    this.updateCaption();
   }
 }
 

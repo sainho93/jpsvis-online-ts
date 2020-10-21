@@ -52,7 +52,6 @@ class Geometry2D {
       this.captions.addChild(caption);
     }
 
-
     // create polygon
     for (let i = 0; i < polygons.length; i++){
       this.createPolygon(polygons[i])
