@@ -136,41 +136,6 @@ export default class JPS3D {
 
 		this.scene.add(directionalLight);
 
-		// Add geometry
-		this.geometry = new Geometry(this.init.geometryData);
-		this.scene.add(this.geometry.createRooms());
-		this.scene.add(this.geometry.createTransitions());
-
-		// Add pedestrians
-		this.loader = new GLTFLoader();
-		this.mixers = [];
-		this.pedestrians = [];
-		this.pedRadius = []
-		this.frame = 0;
-
-		for(let i = 0; i<this.trajectory.pedestrians.length; i++){
-			this.loader.load(
-				'/pedestrian/man_001.gltf',
-				(gltf) => {
-					gltf.scene.name = (i+1).toString();
-					gltf.scene.visible = false;
-					this.scene.add(gltf.scene);
-					this.pedestrians.push(gltf.scene);
-
-					this.setMixer(gltf.scene, gltf.animations[0]);
-				},
-				// called while loading is progressing
-				function ( xhr ) {
-
-					console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-				},
-				function ( error ) {
-
-					console.error( error );
-				});
-		}
-
 		// Add dat gui
 		this.skeletonHelpers = [];
 		this.state = {
@@ -198,6 +163,57 @@ export default class JPS3D {
 		playFolder.add({reset: () => this.resetPedLocation()}, 'reset');
 		this.gui.add(this, 'switchTo2D').name('Switch To 2D');
 
+		// Add geometry
+		this.geometry = new Geometry(this.init.geometryData);
+		this.scene.add(this.geometry.createRooms());
+		this.scene.add(this.geometry.createTransitions());
+
+		// Add pedestrians
+		this.loader = new GLTFLoader();
+		this.mixers = [];
+		this.pedestrians = [];
+		this.pedRadius = []
+		this.frame = 0;
+
+		for(let i = 0; i<this.trajectory.pedestrians.length; i++){
+			this.loader.load(
+				'/pedestrian/man_001.gltf',
+				(gltf) => {
+					gltf.scene.name = (i+1).toString();
+					gltf.scene.visible = false;
+					this.scene.add(gltf.scene);
+					this.pedestrians.push(gltf.scene);
+
+					// set starting location
+					const id = this.pedestrians.length - 1;
+
+					const startLocation = this.trajectory.pedestrians[id][0];
+					this.pedestrians[id].position.x = 0;
+					this.pedestrians[id].position.y = 0;
+					this.pedestrians[id].position.z = 0;
+					this.pedestrians[id].rotation.y = 0;
+
+					this.pedestrians[id].translateX(startLocation.coordinate.x);
+					this.pedestrians[id].translateZ(-startLocation.coordinate.y);
+					this.pedestrians[id].translateY(startLocation.coordinate.z);
+					this.pedestrians[id].rotateY(0.5 * Math.PI);
+
+					this.pedestrians[id].visible = this.state.pedestrians;
+
+					this.setMixer(gltf.scene, gltf.animations[0]);
+				},
+				// called while loading is progressing
+				function ( xhr ) {
+
+					console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+				},
+				function ( error ) {
+
+					console.error( error );
+				});
+		}
+
 
 		// Add sky
 		addSky(this.scene);
@@ -218,7 +234,6 @@ export default class JPS3D {
 		this.stats.dom.style.position = 'absolute'; // top left of container, not the page.
 		this.stats.dom.style.left = '25%'
 		this.parentElement.appendChild(this.stats.dom);
-
 
 
 		// animate() is a callback func for requestAnimationFrame()
@@ -358,6 +373,7 @@ export default class JPS3D {
 		this.state.showTrajectory = false;
 	}
 
+
 	resetPedLocation(){
 		// Stop animation at first
 		for(let i=0; i<this.mixers.length; i++){
@@ -365,8 +381,7 @@ export default class JPS3D {
 			action.stop();
 		}
 		for(let i=0; i<this.pedestrians.length; i++){
-			const id = parseInt(this.pedestrians[i].name);
-			const startLocation = this.trajectory.pedestrians[id-1][0];
+			const startLocation = this.trajectory.pedestrians[i][0];
 			this.pedestrians[i].position.x = 0;
 			this.pedestrians[i].position.y = 0;
 			this.pedestrians[i].position.z = 0;
