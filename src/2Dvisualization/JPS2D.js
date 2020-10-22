@@ -36,8 +36,8 @@ class JPS2D {
     this.app.renderer.backgroundColor = 0xF8F8FF;
 
     this.probs = {
-      offsetX: 0,
-      offsetY: 0,
+      offsetX: this.app.view.width/2,
+      offsetY: - this.app.view.height/2,
       scale: 10,
       showPedestrian: true,
       showCaption: false,
