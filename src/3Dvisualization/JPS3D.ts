@@ -253,6 +253,15 @@ export default class JPS3D {
 		const myReq = requestAnimationFrame(this.animate);
 		cancelAnimationFrame(myReq);
 
+		// Clear content in scene from memory
+		this.scene.traverse(function (item) {
+			if (item instanceof three.Mesh) {
+				item.geometry.dispose();
+				item.material.dispose();
+			}
+		});
+
+
 		// Clear 3D view
 		const canvas = document.getElementsByTagName('canvas');
 

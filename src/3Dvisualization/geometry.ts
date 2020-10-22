@@ -198,8 +198,11 @@ export default class Geometry {
 			roomGroup.add(this.makeSubroom((this.rooms.room as Room).subroom));
 		}
 
+
+
 		return roomGroup;
 	}
+
 
 	createTransitions(): three.Group{
 		const transitionGroup = new three.Group();
