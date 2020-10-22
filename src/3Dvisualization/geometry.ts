@@ -404,6 +404,8 @@ export default class Geometry {
 		const center: three.Vector2 = new three.Vector2((point1.x + point2.x + point3.x + point4.x)/4,
 			(point1.y + point2.y + point3.y + point4.y)/4);
 
+
+		// Find width
 		const width1: number = Math.sqrt(Math.pow(Math.abs(point1.x - point3.x),2)
 			+ Math.pow(Math.abs(point1.y - point3.y),2));
 		const width2: number = Math.sqrt(Math.pow(Math.abs(point1.x - point4.x),2)
@@ -416,24 +418,15 @@ export default class Geometry {
 			width = width2;
 		}
 
-		// RotationY angle
-		let angleY = 0;
-		if((point1.x <= point2.x && point1.y <= point2.y) || (point1.x >= point2.x && point1.y >= point2.y)){
-			// Gradient of Polygon1 is positive
-			angleY = Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
-		}else {
-			angleY = Math.PI/2 - Math.atan2(Math.abs(point1.y - point2.y), Math.abs(point1.x - point2.x));
-		}
-
 		// RotationX angle
-		const Ax = parseFloat(subroom.A_x);
-		const By = parseFloat(subroom.B_y);
-		const Cz = parseFloat(subroom.C_z);
-
 		const upX: number = parseFloat(subroom.up.px);
 		const upY: number = parseFloat(subroom.up.py);
 		const downX: number = parseFloat(subroom.down.px);
 		const downY: number = parseFloat(subroom.down.py);
+
+		const Ax = parseFloat(subroom.A_x);
+		const By = parseFloat(subroom.B_y);
+		const Cz = parseFloat(subroom.C_z);
 
 		const elevationUp: number = upX * Ax + upY * By + Cz;
 		const elevationDown: number = downX * Ax + downY * By + Cz;
@@ -447,43 +440,37 @@ export default class Geometry {
 		const length: number = Math.sqrt(Math.pow(projection,2)
 			+ Math.pow(heightDifference,2));
 
-		let angleZ: number;
+		const angleZ: number = Math.atan2(heightDifference, projection);
 
-		if(upY === downY){
-			if(upX > downX){
-				// Gradient of the stair is positive
-				angleZ = Math.atan2(heightDifference, projection);
-			}else if(upX < downX) {
-				// Gradient of the stair is negative
-				angleZ = -Math.atan2(heightDifference, projection);
-			}else{
-				console.error('Rendering stairs failed, the points of stair are same!')
-				return;
-			}
-		}
-		else if (upX === downX){
-			if(upY > downY){
-				// Gradient of the stair is positive
-				angleZ = - Math.atan2(heightDifference, projection);
-			}else if(upY < downY) {
-				// Gradient of the stair is negative
-				angleZ =  Math.atan2(heightDifference, projection);
-			}else{
-				console.error('Rendering stairs failed, the points of stair are same!')
-				return;
-			}
-		}else {
-			console.error('Rendering stairs failed, the direction of stair isn\'t parallel to X axis or Y axis!')
-			return;
+		// RotationY angle
+		const angleAbs: number = Math.acos(Math.abs(upY - downY) / projection)
+
+		let angleY: number;
+		if(upX > downX && upY > downY){
+			angleY = angleAbs
+		}else if(upX < downX && upY > downY){
+			angleY = Math.PI/2 + angleAbs
+		}else if(upX < downX && upY < downY){
+			angleY = Math.PI + angleAbs
+		}else if(upX > downX && upY < downY){
+			angleY = - angleAbs
+		}else if (upX === downX && upY > downY){
+			angleY = Math.PI/2;
+		}else if (upX === downX && upY < downY){
+			angleY = -Math.PI/2;
+		}else if (upX > downX && upY === downY){
+			angleY = 0;
+		}else if (upX < downX && upY === downY){
+			angleY = Math.PI;
 		}
 
 		// Mesh
 		const stair: three.BoxBufferGeometry = new three.BoxBufferGeometry(length,0.01,width);
 
-		stair.rotateZ(-angleZ);
+		stair.rotateZ(angleZ);
 		stair.rotateY(angleY);
 
-		stair.translate(center.x, (elevationUp + elevationDown)/2, -center.y);  // Revolve y axes
+		stair.translate(center.x, (elevationUp + elevationDown)/2, -center.y); // Revolve y axes
 
 		return stair;
 	}

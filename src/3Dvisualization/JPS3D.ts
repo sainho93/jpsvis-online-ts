@@ -174,45 +174,47 @@ export default class JPS3D {
 		this.pedestrians = [];
 		this.pedRadius = []
 		this.frame = 0;
+		if(this.trajectory != null){
+			for(let i = 0; i<this.trajectory.pedestrians.length; i++){
+				this.loader.load(
+					'/pedestrian/man_001.gltf',
+					(gltf) => {
+						gltf.scene.name = (i+1).toString();
+						gltf.scene.visible = false;
+						this.scene.add(gltf.scene);
+						this.pedestrians.push(gltf.scene);
 
-		for(let i = 0; i<this.trajectory.pedestrians.length; i++){
-			this.loader.load(
-				'/pedestrian/man_001.gltf',
-				(gltf) => {
-					gltf.scene.name = (i+1).toString();
-					gltf.scene.visible = false;
-					this.scene.add(gltf.scene);
-					this.pedestrians.push(gltf.scene);
+						// set starting location
+						const id = this.pedestrians.length - 1;
 
-					// set starting location
-					const id = this.pedestrians.length - 1;
+						const startLocation = this.trajectory.pedestrians[id][0];
+						this.pedestrians[id].position.x = 0;
+						this.pedestrians[id].position.y = 0;
+						this.pedestrians[id].position.z = 0;
+						this.pedestrians[id].rotation.y = 0;
 
-					const startLocation = this.trajectory.pedestrians[id][0];
-					this.pedestrians[id].position.x = 0;
-					this.pedestrians[id].position.y = 0;
-					this.pedestrians[id].position.z = 0;
-					this.pedestrians[id].rotation.y = 0;
+						this.pedestrians[id].translateX(startLocation.coordinate.x);
+						this.pedestrians[id].translateZ(-startLocation.coordinate.y);
+						this.pedestrians[id].translateY(startLocation.coordinate.z);
+						this.pedestrians[id].rotateY(0.5 * Math.PI);
 
-					this.pedestrians[id].translateX(startLocation.coordinate.x);
-					this.pedestrians[id].translateZ(-startLocation.coordinate.y);
-					this.pedestrians[id].translateY(startLocation.coordinate.z);
-					this.pedestrians[id].rotateY(0.5 * Math.PI);
+						this.pedestrians[id].visible = this.state.pedestrians;
 
-					this.pedestrians[id].visible = this.state.pedestrians;
+						this.setMixer(gltf.scene, gltf.animations[0]);
+					},
+					// called while loading is progressing
+					function ( xhr ) {
 
-					this.setMixer(gltf.scene, gltf.animations[0]);
-				},
-				// called while loading is progressing
-				function ( xhr ) {
+						console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
-					console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+					},
+					function ( error ) {
 
-				},
-				function ( error ) {
-
-					console.error( error );
-				});
+						console.error( error );
+					});
+			}
 		}
+
 
 
 		// Add sky
