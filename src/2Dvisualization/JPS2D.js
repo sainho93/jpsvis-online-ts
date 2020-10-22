@@ -17,7 +17,7 @@ class JPS2D {
     this.trajectoryData = this.init.trajectoryData;
     this.geometryData = this.init.geometryData;
 
-    this.app = new PIXI.Application({width: this.width, height: this.height});
+    this.app = new PIXI.Application({width: this.width, height: this.height, resizeTo: window });
 
     const gl = this.app.view.getContext("webgl2");
 
@@ -122,6 +122,7 @@ class JPS2D {
     this.animate();
 
     this.app.renderer.render(this.app.stage);
+
   }
 
   switchTo3D () {
@@ -296,6 +297,7 @@ class JPS2D {
 
   animate(){
     requestAnimationFrame(this.animate);
+
 
     this.updatePed();
     this.updateInformation();
