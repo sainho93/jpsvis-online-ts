@@ -33,6 +33,7 @@ import Geometry from './geometry';
 import { TraFile } from './trajectory';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -65,6 +66,8 @@ export default class JPS3D {
 	private width: number;
 	private height: number
 	private loader: GLTFLoader;
+	private DRACOloader: DRACOLoader;
+	private pedModel: three.Object3D;
 	private mixers: three.AnimationMixer[];
 	private clock: three.Clock;
 	private pedestrians: three.Object3D[];// this.pedestrians contains all imported models of pedestrian, not the trajectory data
@@ -98,6 +101,7 @@ export default class JPS3D {
 
 		this.scene = new three.Scene();
 		this.camera = new three.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
+
 
 		parentElement.appendChild(this.renderer.domElement);
 
@@ -170,51 +174,56 @@ export default class JPS3D {
 
 		// Add pedestrians
 		this.loader = new GLTFLoader();
+		this.DRACOloader = new DRACOLoader();
+		this.DRACOloader.setDecoderPath('three/examples/js/libs/draco/');
+		// this.DRACOloader.preload();
+		this.DRACOloader.setDecoderConfig({ type: 'js' });
+		this.loader.setDRACOLoader(this.DRACOloader);
+
 		this.mixers = [];
 		this.pedestrians = [];
 		this.pedRadius = []
 		this.frame = 0;
-		if(this.trajectory != null){
-			for(let i = 0; i<this.trajectory.pedestrians.length; i++){
-				this.loader.load(
-					'/pedestrian/man_001.gltf',
-					(gltf) => {
-						gltf.scene.name = (i+1).toString();
-						gltf.scene.visible = false;
-						this.scene.add(gltf.scene);
-						this.pedestrians.push(gltf.scene);
 
-						// set starting location
-						const id = this.pedestrians.length - 1;
+		for(let i = 0; i<this.trajectory.pedestrians.length; i++) {
+			this.loader.load(
+				'/pedestrian/man_001.gltf',
+				(gltf) => {
+					gltf.scene.name = (i + 1).toString();
+					gltf.scene.visible = false;
+					this.scene.add(gltf.scene);
+					this.pedestrians.push(gltf.scene);
 
-						const startLocation = this.trajectory.pedestrians[id][0];
-						this.pedestrians[id].position.x = 0;
-						this.pedestrians[id].position.y = 0;
-						this.pedestrians[id].position.z = 0;
-						this.pedestrians[id].rotation.y = 0;
 
-						this.pedestrians[id].translateX(startLocation.coordinate.x);
-						this.pedestrians[id].translateZ(-startLocation.coordinate.y);
-						this.pedestrians[id].translateY(startLocation.coordinate.z);
-						this.pedestrians[id].rotateY(0.5 * Math.PI);
+					// set starting location
+					const id = this.pedestrians.length - 1;
 
-						this.pedestrians[id].visible = this.state.pedestrians;
+					const startLocation = this.trajectory.pedestrians[id][0];
+					this.pedestrians[id].position.x = 0;
+					this.pedestrians[id].position.y = 0;
+					this.pedestrians[id].position.z = 0;
+					this.pedestrians[id].rotation.y = 0;
 
-						this.setMixer(gltf.scene, gltf.animations[0]);
-					},
-					// called while loading is progressing
-					function ( xhr ) {
+					this.pedestrians[id].translateX(startLocation.coordinate.x);
+					this.pedestrians[id].translateZ(-startLocation.coordinate.y);
+					this.pedestrians[id].translateY(startLocation.coordinate.z);
+					this.pedestrians[id].rotateY(0.5 * Math.PI);
 
-						console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+					this.pedestrians[id].visible = this.state.pedestrians;
 
-					},
-					function ( error ) {
+					this.setMixer(gltf.scene, gltf.animations[0]);
+				},
+				// called while loading is progressing
+				function (xhr) {
 
-						console.error( error );
-					});
-			}
+					console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+				},
+				function (error) {
+
+					console.error(error);
+				});
 		}
-
 
 
 		// Add sky
@@ -434,7 +443,6 @@ export default class JPS3D {
 
 		const dt = this.clock.getDelta();
 		this.mixers.forEach(mixer => mixer.update(dt));
-
 
 		this.updatePedLocation();
 	}
