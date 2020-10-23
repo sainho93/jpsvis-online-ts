@@ -4,10 +4,11 @@ import matplotlib.cm as cm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.patches import Polygon as ppolygon # polygons
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-    
+
 import numpy as np
 import glob
 from xml.dom.minidom import parse
+
 from Utilities import read_obstacle
 from Utilities import read_subroom_walls
 from Utilities import geo_limits
@@ -56,7 +57,7 @@ def get_profiles(Id, field_dir, geo_filename, beginsteady=None, endsteady=None):
     :rtype:
 
     """
-     
+
     density_files = os.path.join(field_dir, "density",  "Prf_*id_{}_*".format(Id))
     velocity_files = os.path.join(field_dir, "velocity",  "Prf_*id_{}_*".format(Id))
     v_Voronoi = glob.glob(velocity_files)
@@ -106,7 +107,7 @@ def get_profiles(Id, field_dir, geo_filename, beginsteady=None, endsteady=None):
 
     velocity = velocity / (endsteady-beginsteady)
     flow = density * velocity
-   
+
  # plot
     figs, axs = plt.subplots(3, 1)
     axs[0].set_aspect('equal')
@@ -114,7 +115,7 @@ def get_profiles(Id, field_dir, geo_filename, beginsteady=None, endsteady=None):
     for i in range(3):
         plot_geometry(axs[i], geometry_obst)
         plot_geometry(axs[i], geometry_wall)
-        
+
     vmax_density = np.mean(density)+np.std(density)
     vmax_velocity = np.mean(velocity)+np.std(velocity)
 
@@ -163,44 +164,44 @@ def get_profiles(Id, field_dir, geo_filename, beginsteady=None, endsteady=None):
 
 def IFD_plot_polygon_rho(Id, frame, geo_filename):
     """Plot Voronoi polygons with measurement areas
-    
-    :param Id: 
-    :param frame: 
-    :returns: 
-    :rtype: 
+
+    :param Id:
+    :param frame:
+    :returns:
+    :rtype:
 
     """
 
     m =  d.getElementsByTagName('measurement_areas')
     verteces = []
-    for o_num, o_elem in enumerate(m[0].getElementsByTagName('area_B')): 
+    for o_num, o_elem in enumerate(m[0].getElementsByTagName('area_B')):
         if o_elem.getAttribute('id') == str(Id):
             n_vertex = len(o_elem.getElementsByTagName('vertex'))
             verteces = np.zeros((n_vertex, 2))
-            
+
             for v_num, v_elem in enumerate(o_elem.getElementsByTagName('vertex')):
                     verteces[v_num, 0] = o_elem.getElementsByTagName('vertex')[v_num].attributes['x'].value
                     verteces[v_num, 1] = o_elem.getElementsByTagName('vertex')[v_num].attributes['y'].value
-            
+
     xml_datei = open(geo_filename, "r")
     geo_xml = parse(xml_datei)
     xml_datei.close()
 
     geometry_wall = read_subroom_walls(geo_xml)
     geometry_obst = read_obstacle(geo_xml)
-    
+
     files = glob.glob(os.path.join(
-        jpsreport_ini_dir, 
-        output_dir, 
-        "Fundamental_Diagram", 
-        "IndividualFD", 
+        jpsreport_ini_dir,
+        output_dir,
+        "Fundamental_Diagram",
+        "IndividualFD",
         "*id_{}.dat".format(Id)))
-    
+
     df_poly = pd.read_csv(files[0],
                           comment='#',sep='\t',
                           names=['Frame','PersID','x','y','z','rho','vel','poly'],
                           index_col=False)
-    
+
     # set the index to be this and don't drop
     df_poly.set_index(keys=['Frame'], drop=False, inplace=True)
 
@@ -212,9 +213,9 @@ def IFD_plot_polygon_rho(Id, frame, geo_filename):
 
     for gw in geometry_wall.keys():
         ax.plot(geometry_wall[gw][:, 0], geometry_wall[gw][:, 1], color='black', lw=2)
-        
+
     sm = cm.ScalarMappable(cmap = cm.get_cmap('rainbow'))
- 
+
     df_0 = df_poly[df_poly.Frame == frame]
     polys = df_0['poly']
     rhos = df_0['rho']
@@ -222,7 +223,7 @@ def IFD_plot_polygon_rho(Id, frame, geo_filename):
     Y = df_0['y']
     sm.set_clim(vmin=0, vmax=6) # todo max rho
     for x, y, rho, poly in zip(X, Y, rhos, polys):
-        p = str_to_array(poly)/10000 
+        p = str_to_array(poly)/10000
         patch = ppolygon(p,
                      fc= sm.to_rgba(rho),
                      ec= 'white',
@@ -232,7 +233,7 @@ def IFD_plot_polygon_rho(Id, frame, geo_filename):
 # plot measurement area
     plt.plot(verteces[:, 0], verteces[:,1],'-r')
 
-    plt.axis('off')    
+    plt.axis('off')
 
     axins = inset_axes(ax,
                    width="5.5%",  # width = 5% of parent_bbox width
@@ -242,4 +243,4 @@ def IFD_plot_polygon_rho(Id, frame, geo_filename):
                    bbox_transform=ax.transAxes,
                    borderpad=0,
                    )
-    fig.colorbar(sm, ax=ax, cax=axins)    
+    fig.colorbar(sm, ax=ax, cax=axins)

@@ -33,7 +33,9 @@ from xml.etree import ElementTree as ET
 import xmltodict
 import sys
 
-sys.path.append("..")
+BASE_DIR=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
 from analysis import _Plot_N_t
 from analysis import plot_profiles
 from analysis import plot_FD
