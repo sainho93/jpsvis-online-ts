@@ -63,8 +63,6 @@ Visit http://localhost:8080/ to use JPSvis Online
 
 See more in [Getting Started](getting_started.md)
 
-## Known issues:
-
 
 ## Maintainers
 
